@@ -17,7 +17,7 @@
  * Readme file for local customisations
  *
  * @package    local
- * @copyright  2009 Petr Skoda (http://skodak.org) teste
+ * @copyright  2009 Petr Skoda (http://skodak.org) teste 2
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
