@@ -15,23 +15,31 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin strings are defined here.
+ * Plugin upgrade steps are defined here.
  *
  * @package     local_logdigest
- * @category    string
+ * @category    upgrade
  * @copyright   2021 Tiago Nunes
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'logdigest';
-$string['recolheficheiros'] = 'Tratamento de ficheiros';
-$string['manuntencaodb'] = 'Manutenção da base de dados';
-$string['logdigest'] = 'Log digest';
-$string['logconfig'] = 'Log digest - Configuration';
-$string['instancia'] = 'Gerir Instancias';
-$string['caminho'] = 'Gerir Caminhos';
+/**
+ * Execute local_logdigest upgrade from the given old version.
+ *
+ * @param int $oldversion
+ * @return bool
+ */
+function xmldb_local_logdigest_upgrade($oldversion) {
+    global $DB;
 
+    $dbman = $DB->get_manager();
 
+    // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
+    //
+    // You will also have to create the db/install.xml file by using the XMLDB Editor.
+    // Documentation for the XMLDB Editor can be found at {@link https://docs.moodle.org/dev/XMLDB_editor}.
 
+    return true;
+}

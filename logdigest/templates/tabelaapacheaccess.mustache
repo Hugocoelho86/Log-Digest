@@ -5,21 +5,19 @@
         <th>IP</th>
         <th>Data</th>
         <th>Request</th>
-        <th>Resource</th>
-        <th>Protocol</th>
         <th>Status</th>
         <th>Size</th>
+        <th>HTTP request header</th>
       </tr>
     </thead>
     {{#log}}
       <tr>
-        <td>{{{ip}}}</td>
-        <td>{{{data}}}</td>
-        <td>{{{request}}}</td>
-        <td>{{{resource}}}</td>
-        <td>{{{protocol}}}</td>
-        <td>{{{status}}}</td>
-        <td>{{{size}}}</td>
+        <td>{{{ipcliente}}}</td>
+        <td>{{{tempo}}}</td>
+        <td style="max-width: 200px">{{{pedcliente}}}</td>
+        <td>{{{estadret}}}</td>
+        <td>{{{tamresp}}}</td>
+        <td style="max-width: 200px">{{{reqheader}}}</td>
       </tr>
     {{/log}}
   </table>

@@ -1,33 +1,124 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/logdigest/db" VERSION="20210605" COMMENT="XMLDB file for Moodle local/logdigest"
+<XMLDB PATH="local/logdigest/db" VERSION="20210615" COMMENT="Ficheiro XMLDB para local/logdigest"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="local_logdigest" COMMENT="Default comment for local_logdigest, please edit me">
+    <TABLE NAME="local_logdigest_logs" COMMENT="Mix de tecnologias e tipos de logs suportados">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="tecnologia" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false" COMMENT="Tecnologias suportadas (APACHE,SQL,...)"/>
+        <FIELD NAME="tipo" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false" COMMENT="tipo de log que a tecnologia suporta (erro, acesso..)"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="mix" TYPE="unique" FIELDS="tecnologia, tipo" COMMENT="Garante que não há dois IDs que tem o mesmo mix."/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_logdigest_instancia" COMMENT="Tabela para conter dados das diferentes instancias.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="ip" TYPE="char" LENGTH="15" NOTNULL="false" DEFAULT="127.0.0.1" SEQUENCE="false" COMMENT="Endereco IP"/>
+        <FIELD NAME="nome" TYPE="char" LENGTH="30" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="descricao" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_logdigest_accesslog" COMMENT="Default comment for the table, please edit me">
+    <TABLE NAME="local_logdigest_caminholog" COMMENT="Tabela defeito para registar os caminhos dos logs por maquina">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="ip" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="dia" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="mes" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="ano" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="request" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="resource" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="protocol" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="status" TYPE="int" LENGTH="3" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="size" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia que pertence o log"/>
+        <FIELD NAME="logsid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID do mix de logs (tecnologia / tipo)"/>
+        <FIELD NAME="caminho" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="caminho do log na maquina"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="instancia" TYPE="foreign" FIELDS="instanciaid" REFTABLE="local_logdigest_instancia" REFFIELDS="id" COMMENT="FK de Instancia &amp;lt;-&amp;gt; CaminhoLogs"/>
+        <KEY NAME="logs" TYPE="foreign" FIELDS="logsid" REFTABLE="logs" REFFIELDS="id" COMMENT="FK para garantir que o mix de logs existe"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_logdigest_apacheerro" COMMENT="Apache Erro">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia que pertence"/>
+        <FIELD NAME="tempo" TYPE="number" LENGTH="20" NOTNULL="true" SEQUENCE="false" DECIMALS="10" COMMENT="Tempo unix com microsegundos"/>
+        <FIELD NAME="nivellog" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Nivel de log (informativo, erro..)"/>
+        <FIELD NAME="idprocesso" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID do processo a invocar o erro."/>
+        <FIELD NAME="ipcliente" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="IP do cliente"/>
+        <FIELD NAME="mensagem" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Mensagem de erro da aplicacao"/>
+        <FIELD NAME="linha" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Campo que contem a linha inteira. A ser utilizado apenas em ultimo recurso."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="instanciaid" TYPE="foreign" FIELDS="instanciaid" REFTABLE="local_logdigest_instancia" REFFIELDS="id" COMMENT="FK instanciaID para garantir que a instancia existe"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_logdigest_apacheacesso" COMMENT="Apache Acesso">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia"/>
+        <FIELD NAME="tempo" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Temo unix com microsegundos"/>
+        <FIELD NAME="linha" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Campo que contem a linha inteira. A ser utilizado apenas em ultimo recurso."/>
+        <FIELD NAME="ipcliente" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="IP do cliente"/>
+        <FIELD NAME="idcliente" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Identidade do cliente"/>
+        <FIELD NAME="utilizador" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Utilizador que acede ao recurso"/>
+        <FIELD NAME="pedcliente" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Pedido que o cliente realizou"/>
+        <FIELD NAME="estadret" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Codigo de estado retornado ao cliente"/>
+        <FIELD NAME="tamresp" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="tamanho da resposta dada ao cliente"/>
+        <FIELD NAME="referer" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Pagina que redirecionou o cliente"/>
+        <FIELD NAME="reqheader" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Conteudo do cabecalho do cliente"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="instanciaid" TYPE="foreign" FIELDS="instanciaid" REFTABLE="local_logdigest_instancia" REFFIELDS="id" COMMENT="FK instanciaID para garantir que a instancia existe"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_logdigest_mysqlerro" COMMENT="MySQL Erro">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia"/>
+        <FIELD NAME="linha" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Campo que contem a linha inteira. A ser utilizado apenas em ultimo recurso."/>
+        <FIELD NAME="tempo" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Temo unix com microsegundos"/>
+        <FIELD NAME="threadid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Id da thread que invocou o log"/>
+        <FIELD NAME="tipo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Nivel do log"/>
+        <FIELD NAME="codigo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Codigo do erro"/>
+        <FIELD NAME="subsistema" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Subsistema de MySQL"/>
+        <FIELD NAME="mensagem" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Pedido que o cliente realizou"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="instanciaid" TYPE="foreign" FIELDS="instanciaid" REFTABLE="local_logdigest_instancia" REFFIELDS="id" COMMENT="FK instanciaID para garantir que a instancia existe"/>
+      </KEYS>
+    </TABLE>
+        <TABLE NAME="local_logdigest_mysqlgeral" COMMENT="Logs gerais de MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia"/>
+        <FIELD NAME="linha" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Campo que contem a linha inteira. A ser utilizado apenas em ultimo recurso."/>
+        <FIELD NAME="tempo" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Temo unix com microsegundos"/>
+        <FIELD NAME="threadid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="ID da thread que corre o comando"/>
+        <FIELD NAME="tipo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Tipo de comando"/>
+        <FIELD NAME="mensagem" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Corpo da query"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="instanciaid" TYPE="foreign" FIELDS="instanciaid" REFTABLE="local_logdigest_instancia" REFFIELDS="id" COMMENT="FK instanciaID para garantir que a instancia existe"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_logdigest_param" COMMENT="configuracoes gerais">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="chave" TYPE="char" LENGTH="12" NOTNULL="true" SEQUENCE="false" COMMENT="Chave do parametro"/>
+        <FIELD NAME="valor" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="valor da chave, em text, tempo deve ser em epoch."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="chave" UNIQUE="true" FIELDS="chave" COMMENT="garante que cada chave so tem 1 valor"/>
+    </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

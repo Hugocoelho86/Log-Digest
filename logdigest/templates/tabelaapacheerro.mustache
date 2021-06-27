@@ -1,0 +1,25 @@
+<div class="card">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>IP</th>
+        <th>Data</th>
+        <th>Nivel Erro</th>
+        <th>ID Processo</th>
+        <th>Mensagem</th>
+      </tr>
+    </thead>
+    {{#log}}
+      <tr>
+        <td>{{{ipcliente}}}</td>
+        <td>{{{tempo}}}</td>
+        <td style="max-width: 200px">{{{nivellog}}}</td>
+        <td>{{{idprocesso}}}</td>
+        <td style="max-width: 200px">{{{mensagem}}}</td>
+      </tr>
+    {{/log}}
+  </table>
+  {{^log}}
+  <div class="card-body"><p>Não foram encontrados nenhuns logs</p></div>
+    {{/log}}
+</div>

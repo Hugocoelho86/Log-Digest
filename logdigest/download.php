@@ -20,36 +20,158 @@ global $USER, $DB, $CFG;
 
 require_login();
 
+$instancia = optional_param('instancia', '', PARAM_INT);
+$logid = optional_param('logid', '', PARAM_INT);
+$idt = optional_param('idt', '', PARAM_INT);
+$fdt = optional_param('fdt', '', PARAM_INT);
+$ip = optional_param('ip', '', PARAM_TEXT);
+$req = optional_param('req', '', PARAM_TEXT);
+$nl = optional_param('nl', '', PARAM_TEXT);
 $dataformat = optional_param('dataformat', '', PARAM_ALPHA);
 
-$results = new stdClass();
+if ($logid == 1){
 
-$logs = $DB->get_records('local_logdigest_accesslog', null);
-foreach ($logs as $key => $value)
-{
-    $logs[$key]->data = $logs[$key]->dia . "/" . $logs[$key]->mes . "/" . $logs[$key]->ano;
-}
+    if($ip && $nl){
 
-$obj = new ArrayObject($logs);
-$it = $obj->getIterator();
+        $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
+        FROM {local_logdigest_apacheerro}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f
+        AND ".$DB->sql_like('nivellog', ':n')." 
+        AND ".$DB->sql_like('ipcliente', ':o');
+        $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt, 'n' => '%'.$nl.'%', 'o' => '%'.$ip.'%');
+        $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
 
-$columns= array(
-    'id' => "ID",
-    'ip' => "IP",
-    'dia' => "Dia",
-    'mes' => "Mês",
-    'ano' => "Ano",
-    'request' => "Request",
-    'resource' => "Resource",
-    'protocol' => "Protocol",
-    'status' => "Status",
-    'size' => "Size",
-    'data' => "Data"
-);
+    } else if ($ip){
+
+        $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
+        FROM {local_logdigest_apacheerro}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f
+        AND ".$DB->sql_like('ipcliente', ':o');
+        $params = array('id' => $instancia, 'i' => $idt, 'f' => $fdt, 'o' => '%'.$ip.'%');
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
+
+    } else if ($nl){
+
+        $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
+        FROM {local_logdigest_apacheerro}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f
+        AND ".$DB->sql_like('nivellog', ':n');
+        $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt, 'n' => '%'.$nl.'%');
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
+
+    } else if ($idt){
+
+        $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
+        FROM {local_logdigest_apacheerro}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f";
+        $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt);
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
+
+    } else {
+
+        $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
+        FROM {local_logdigest_apacheerro}
+        WHERE instanciaid = :id";
+        $params = array('id' => $instancia);
+        $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
+
+    }
+
+    $columns= array(
+        'ipcliente' => "IP",
+        'tempo' => "Data",
+        'nivellog' => "Request",
+        'idprocesso' => "Status",
+        'mensagem' => "Size",
+    );
+    
+    
 
 
-\core\dataformat::download_data('logsdata', $dataformat, $columns, $it, function($record){
+} else if ($logid == 2){
+
+
+   if($ip && $req){
+
+        $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
+        FROM {local_logdigest_apacheacesso}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f
+        AND ".$DB->sql_like('pedcliente', ':pc')." 
+        AND ".$DB->sql_like('ipcliente', ':o');
+        $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt, 'pc' => '%'.$req.'%', 'o' => '%'.$ip.'%');
+        $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
+
+   } else if ($ip){
+     
+        $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
+        FROM {local_logdigest_apacheacesso}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f
+        AND ".$DB->sql_like('ipcliente', ':o');
+        $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt, 'o' => '%'.$ip.'%');
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
+
+   } else if ($req){
+      
+        $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
+        FROM {local_logdigest_apacheacesso}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f
+        AND ".$DB->sql_like('pedcliente', ':pc');
+        $params = array('id' => $instancia, 'i' => $idt, 'f' => $fdt, 'pc' => '%'.$req.'%');
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
+       
+
+   } else if ($idt){
+
+        $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
+        FROM {local_logdigest_apacheacesso}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f";
+        $params = array('id' => $instancia, 'i' => $idt, 'f' => $fdt);
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
+
+   } else {
+
+        $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
+        FROM {local_logdigest_apacheacesso}
+        WHERE instanciaid = :id";
+        $params = array('id' => $instancia);
+        $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
+
+
+   }
+/*
+    $sql = "SELECT {local_logdigest_apacheacesso}.ipcliente, {local_logdigest_apacheacesso}.tempo, {local_logdigest_apacheacesso}.pedcliente, {local_logdigest_apacheacesso}.estadret, {local_logdigest_apacheacesso}.tamresp, {local_logdigest_apacheacesso}.reqheader
+    FROM {local_logdigest_apacheacesso}
+    WHERE {local_logdigest_apacheacesso}.instanciaid = {$instancia};";
+
+    $logs = $DB->get_recordset_sql($sql, null);*/
+
+    $columns= array(
+    'ipcliente' => "IP",
+    'tempo' => "Data",
+    'pedcliente' => "Request",
+    'estadret' => "Status",
+    'tamresp' => "Size",
+    'reqheader' => "Request Header",
+    );
+
+} else if ($logid == 3){
+
+} else if ($logid == 4){
+
+} 
+
+
+
+\core\dataformat::download_data('logsdata', $dataformat, $columns, $logs, function($record){
     // processar dados
-
+    $record->tempo = userdate($record->tempo);
     return $record;
 });

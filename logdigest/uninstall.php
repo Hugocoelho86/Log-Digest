@@ -15,23 +15,20 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin strings are defined here.
+ * Code that is executed before the tables and data are dropped during the plugin uninstallation.
  *
  * @package     local_logdigest
- * @category    string
+ * @category    upgrade
  * @copyright   2021 Tiago Nunes
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'logdigest';
-$string['recolheficheiros'] = 'Tratamento de ficheiros';
-$string['manuntencaodb'] = 'Manutenção da base de dados';
-$string['logdigest'] = 'Log digest';
-$string['logconfig'] = 'Log digest - Configuration';
-$string['instancia'] = 'Gerir Instancias';
-$string['caminho'] = 'Gerir Caminhos';
+/**
+ * Custom uninstallation procedure.
+ */
+function xmldb_local_logdigest_uninstall() {
 
-
-
+    return true;
+}

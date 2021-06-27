@@ -1,4 +1,6 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -10,14 +12,20 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-//$plugin->version  = yyyymmddxx;
-$plugin->version  = 2021051601;
-$plugin->requires = 2020061506.01;
+/**
+ * Plugin version and other meta-data are defined here.
+ *
+ * @package     local_logdigest
+ * @copyright   2021 Tiago Nunes
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_logdigest';
-$plugin->cron     = 0;
-$plugin->release = '1.0';
-
-$plugin->maturity = MATURITY_STABLE;
+$plugin->release = '0.5.1';
+$plugin->version = 2021061513;
+$plugin->requires = 2020061506.01;
+$plugin->maturity = MATURITY_ALPHA;

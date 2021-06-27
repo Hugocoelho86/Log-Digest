@@ -1,0 +1,28 @@
+<div class="card">
+<div class="card-body"> <h3 class="float-left">Instancias</h3> <a href="/moodle/local/logdigest/instancia.php" class="btn btn-secondary float-right">Adicionar</a><br></div></div>
+<div class="card">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>IP</th>
+        <th>Nome</th>
+        <th>Descrição</th>
+      </tr>
+    </thead>
+    {{#inst}}
+      <tr>
+        <td>{{{id}}}</td>
+        <td>{{{ip}}}</td>
+        <td>{{{nome}}}</td>
+        <td>{{{descricao}}}</td>
+        <td><a href="{{urlinstancia}}={{id}}"><i class="fa fa-edit"></i>                </td>
+        <td><a href="{{urldelinstancia}}={{id}}" onclick="return deleteconfirm('Dejesa apagar a instancia e todos os caminhos e logs associados?')"><i class="fa fa-trash-o"></i>                </td>
+      </tr>
+    {{/inst}}
+  </table>
+  {{^inst}}
+  <div class="card-body"><p>Ainda não foram adicionadas instancias.</p></div>
+    {{/inst}}
+</div>
+<br>

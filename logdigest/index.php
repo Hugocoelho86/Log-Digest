@@ -25,13 +25,13 @@
 require_once '../../config.php';
 global $USER, $DB, $CFG;
 
+require_once("forms/logdigest_instancia_form.php");
+
 $PAGE->set_url('/local/logdigest/index.php');
 $PAGE->set_context(context_system::instance());
-//$PAGE->requires->js('/local/staffmanager/assets/logdigest.js');
+$PAGE->requires->js('/local/logdigest/js/js_index.js');
 
 require_login();
-
-require_once("forms/log_form.php");
 
 $strpagetitle = get_string('logdigest', 'local_logdigest');
 $strpageheading = get_string('logdigest', 'local_logdigest');
@@ -39,122 +39,75 @@ $strpageheading = get_string('logdigest', 'local_logdigest');
 $PAGE->set_title($strpagetitle);
 $PAGE->set_heading($strpagetitle);
 
-$year = optional_param('ano', '2021', PARAM_INT);
+$instancia = optional_param('instancia', '', PARAM_TEXT);
+$tecnologia = optional_param('tecnologia', '', PARAM_TEXT);
+$tipo = optional_param('tipo', '', PARAM_TEXT);
 
-$results = new stdClass();
+$existe = $DB->count_records('local_logdigest_instancia', null);
+$existe2 = $DB->count_records('local_logdigest_caminholog', null);
 
-//$logs = $DB->get_record('local_logdigest_accesslog',['id'=>5]); // para procurar só um registo
-
-$logs = $DB->get_records('local_logdigest_accesslog', null);
-foreach ($logs as $key => $value)
-{
-    $logs[$key]->data = $logs[$key]->dia . "/" . $logs[$key]->mes . "/" . $logs[$key]->ano;
+if ($existe == 0 || $existe2 == 0){
+    redirect("/moodle/local/logdigest/logconfig.php", 'Antes de poder utilizar o Log Digest, deverá adicionar a instancia e pelo menos um ficheiro log para poder ser analisado.', 10);
 }
 
-$results->log = array_values($logs);
+/* Para conseguir alterar os valores dos form/select, mas quando subumite o formulario do Moodle não passa os valores alterados, por isso optei por carregar todos os tipos de tecnologias
+//SQL INNER JOIN das tabelas instacia, logs e caminhos
+$sql = "SELECT {local_logdigest_caminholog}.id, {local_logdigest_caminholog}.instanciaid, {local_logdigest_instancia}.ip, {local_logdigest_logs}.tecnologia, {local_logdigest_logs}.tipo
+FROM {local_logdigest_instancia}
+INNER JOIN {local_logdigest_caminholog} ON mdl_local_logdigest_instancia.id = {local_logdigest_caminholog}.instanciaid
+INNER JOIN {local_logdigest_logs} ON {local_logdigest_caminholog}.logsid = {local_logdigest_logs}.id;";
+
+$instancias = $DB->get_records_sql($sql, null);
+
+$dados=array_values($instancias);
 
 
-$sql = "SELECT  request, COUNT(*) as contagem
-FROM {local_logdigest_accesslog}
-GROUP BY request;";
+$PAGE->requires->js_init_call('init', array($dados)); */
 
-$requestsarray = array();
-$requestscount = array();
+//SQL INNER JOIN das tabelas instacia, logs e caminhos
+$sql = "SELECT {local_logdigest_caminholog}.id, {local_logdigest_caminholog}.instanciaid, {local_logdigest_caminholog}.logsid, {local_logdigest_instancia}.ip, {local_logdigest_instancia}.nome, {local_logdigest_logs}.tecnologia, {local_logdigest_logs}.tipo, {local_logdigest_caminholog}.caminho
+FROM {local_logdigest_instancia}
+INNER JOIN {local_logdigest_caminholog} ON mdl_local_logdigest_instancia.id = {local_logdigest_caminholog}.instanciaid
+INNER JOIN {local_logdigest_logs} ON {local_logdigest_caminholog}.logsid = {local_logdigest_logs}.id;";
 
-$requests = array_values($DB->get_records_sql($sql, null));
-foreach ($requests as $key => $value)
-{
-    $requestsarray[] = $requests[$key]->request;
-    $requestscount[] = $requests[$key]->contagem;
-}
 
-//dados a passar para o formulario
-$to_form = array(
-    'req'=>array('GET', 'HEAD', 'POST'),
-    'error'=>array(200, 303, 404, 503, 550)
-);
 
-//Instantiate log_form
-$mform = new log_form(null, $to_form);
+$caminho = $DB->get_records_sql($sql, null);
+
+
+
+///Criar objeto com variaveis para os templates
+$resultados = new stdClass();
+$resultados->caminhos = array_values($caminho);
+$resultados->urlcaminho = new moodle_url('/local/logdigest/analiselog.php');
+
+
+
+/*$toform = [];
+
+$mform = new logdigest_instancia_form();
+
 
 if ($mform->is_cancelled()) {
     //Handle form cancel operation, if cancel button is present on form
-    redirect("/local/logdigest/index.php", '', 10);
+    
 } else if ($fromform = $mform->get_data()) {
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
+    $instanciaid = $fromform->instancia;
+    //$logid = $DB->get_record('local_logdigest_logs', ['tecnologia'=>$fromform->tecnologia,'tipo'=>$fromform->tipo]);
+    $url = new moodle_url('/local/logdigest/analiselog.php', ['instancia' => $instancia, 'logid'=>'2']);
+    redirect($url, $fromform->tecnologia, 10 , \core\output\notification::NOTIFY_SUCCESS);
+}*/
 
-}
-
-$cont = new \core\chart_series('Quantidade', $requestscount);
-$labels1 =  $requestsarray;
-
-$sales = new \core\chart_series('Sales', array(1000, 1170, 660, 1030));
-$expenses = new \core\chart_series('Expenses', [400, 460, 1120, 540]);
-$labels = ['2004', '2005', '2006', '2007'];
-
-
-
-$chartpie = new \core\chart_pie();
-$chartpie->set_title('Gráfico de pizza');
-$chartpie->add_series($cont);
-$chartpie->set_labels($labels1);
-
-
-$chart = new \core\chart_line();
-$chart->set_title('Gráfico de linhas');
-$chart->set_smooth(true); // Calling set_smooth() passing true as parameter, will display smooth lines.
-$chart->add_series($sales);
-$chart->add_series($expenses);
-$chart->set_labels($labels);
 
 echo $OUTPUT->header();
 
-$mform->display();
+echo html_writer::tag('h2', 'Logs para Analise');
 
-echo html_writer::empty_tag('br');
-echo html_writer::empty_tag('hr');
-echo html_writer::empty_tag('br');
+echo $OUTPUT->render_from_template('local_logdigest/tabelacaminhosanalise', $resultados);
 
-echo html_writer::start_tag('div', array('class' => 'container'));
-echo html_writer::start_tag('div', array('class' => 'row'));
-echo html_writer::tag('div', $OUTPUT->render($chartpie), array('class' => 'col'));
-echo html_writer::tag('div', $OUTPUT->render($chart), array('class' => 'col'));
-echo html_writer::end_tag('div');
-echo html_writer::end_tag('div');
-
-echo html_writer::empty_tag('br');
-echo html_writer::empty_tag('hr');
-echo html_writer::empty_tag('br');
-
-
-echo $OUTPUT->download_dataformat_selector('Exportar logs para', 'download.php');
-echo html_writer::empty_tag('br');
-
-echo $OUTPUT->render_from_template('local_logdigest/tabelalogs', $results);
-
-/*
-print_r($year);
-echo "<br>";
-echo "<br>";
-print_r($logs[1]);
-echo "<br>";
-echo "<br>";
-print_r($results);
-echo "<br>";
-echo "<br>";
-print_r($fromform);
-echo gettype($fromform->erro);
-echo "<br>";
-echo "<br>";
-print_r($req);
-echo "<br>";
-print_r($requests[0]->request);
-print_r($requests[0]->contagem);
-echo "<br>";
-echo "<br>";
-print_r($requestsarray);
-print_r($requestscount);
-*/
-
+/*$mform->display();*/
 
 echo $OUTPUT->footer();
+
+
+

@@ -1,0 +1,30 @@
+<div class="card">
+<div class="card-body"> <h3 class="float-left">Caminho Logs</h3> <a href="/moodle/local/logdigest/caminho.php" class="btn btn-secondary float-right">Adicionar</a><br></div></div>
+<div class="card">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>IP</th>
+        <th>Nome</th>
+        <th>Tecnologia</th>
+        <th>Tipo</th>
+        <th>Caminho</th>
+      </tr>
+    </thead>
+    {{#caminhos}}
+      <tr>
+        <td>{{{ip}}}</td>
+        <td>{{{nome}}}</td>
+        <td>{{{tecnologia}}}</td>
+        <td>{{{tipo}}}</td>
+        <td>{{{caminho}}}</td>
+        <td><a href="{{urlcaminho}}={{id}}"><i class="fa fa-edit"></i>                </td>
+        <td><a href="{{urldelcaminho}}={{id}}" onclick="return deleteconfirm('Dejesa apagar o caminho e todos os logs associados?')"><i class="fa fa-trash-o"></i>                </td>
+      </tr>
+    {{/caminhos}}
+  </table>
+  {{^caminhos}}
+  <div class="card-body"><p>Ainda não foram adicionados caminhos.</p></div>
+    {{/caminhos}}
+</div>
+<br>
