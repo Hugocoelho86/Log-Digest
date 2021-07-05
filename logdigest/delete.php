@@ -23,37 +23,32 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
+// ficheiro delete.php, para gerir os deletes
 require_once '../../config.php';
 global $USER, $DB, $CFG;
 
 require_login();
 
+// criar variaveis com os parametros, se houver
 $instanciaid = optional_param('instanciaid', '', PARAM_TEXT);
 $caminhoid = optional_param('caminhoid', '', PARAM_TEXT);
 
+// caso receba o parametro $instanciaid, apaga a instancia, juntamente com os caminhos e logs associados
 if ($instanciaid){
-
     $DB->delete_records('local_logdigest_caminholog', ['instanciaid'=>$instanciaid]);
     $DB->delete_records('local_logdigest_apache_erro', ['instanciaid'=>$instanciaid]);
     $DB->delete_records('local_logdigest_instancia', ['id'=>$instanciaid]);
-
     $url = new moodle_url('/local/logdigest/logconfig.php');
     redirect($url, 'Instancia apagada', 10 , \core\output\notification::NOTIFY_SUCCESS); 
 }
 
-
+// caso receba o parametro $caminhoid, apaga o caminho, juntamente com os logs associados
 if ($caminhoid){
-
-    
     $caminho = $DB->get_record('local_logdigest_caminholog', ['id'=>$caminhoid]);
     $instancia = $DB->get_record('local_logdigest_instancia', ['id'=>$caminho->instanciaid]);
     $logs = $DB->get_record('local_logdigest_logs', ['id'=>$caminho->logsid]);
     $DB->delete_records('local_logdigest_caminholog', ['id'=>$caminhoid]);
-
-    //Ver com Tiago, só tem uma chave estrangeira (foreign key) para a instanciaid
-    //$DB->delete_records('local_logdigest_apache_erro', ['instanciaid'=>$instanciaid]);
-
-
     $url = new moodle_url('/local/logdigest/logconfig.php');
     redirect($url, 'Caminho apagado', 10 , \core\output\notification::NOTIFY_SUCCESS); 
 }

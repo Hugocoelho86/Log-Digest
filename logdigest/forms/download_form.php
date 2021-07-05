@@ -47,9 +47,19 @@ class download_form extends moodleform {
         $mform->addElement('hidden', 'nl');
         $mform->setType('nl', PARAM_TEXT);
 
+        $mform->addElement('hidden', 'nivel');
+        $mform->setType('nivel', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'nl');
+        $mform->setType('nl', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'tipo');
+        $mform->setType('tipo', PARAM_TEXT);
+
        $formatos = array(
             'csv'=>'Valores separados por vírgulas (.csv)',
-            'excel'=>'Microsoft Excel (.xlsx)'
+            'excel'=>'Microsoft Excel (.xlsx)',
+            'pdf'=>'Portable Document Format (.pdf)'
         );
 
         $group=array();

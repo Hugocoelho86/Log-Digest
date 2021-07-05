@@ -27,5 +27,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'local_logdigest';
 $plugin->release = '0.5.1';
 $plugin->version = 2021061513;
-$plugin->requires = 2011120500;
+$plugin->requires = 2020061506.01;
 $plugin->maturity = MATURITY_ALPHA;

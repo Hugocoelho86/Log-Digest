@@ -24,7 +24,7 @@ class filtromysqlerro_form extends moodleform {
     {
         global $CFG;
 
-        $mform = $this->_form; // Don't forget the underscore! 
+        $mform = $this->_form; 
 
         $mform->addElement('hidden', 'instancia');
         $mform->setType('instancia', PARAM_INT);
@@ -47,21 +47,13 @@ class filtromysqlerro_form extends moodleform {
         $mform->addGroup($group2, 'fim', '', ' ', false);
 
 
-
         $group3=array();
-        $group3[] = $mform->createElement('html', '<p style="margin: 25px">IP origem: </p>');
-        $group3[] = $mform->createElement('text', 'ip'); 
-        $mform->setType('ip', PARAM_TEXT);      
-        $mform->setDefault('ip', '');
-        $mform->addGroup($group3, 'inputip', '', ' ', false);
+        $group3[] = $mform->createElement('html', '<p style="margin: 25px">Tipo : </p>');
+        $group3[] = $mform->createElement('text', 'tipo'); 
+        $mform->setType('tipo', PARAM_TEXT);      
+        $mform->setDefault('tipo', '');
+        $mform->addGroup($group3, 'inputtipo', '', ' ', false);
 
-
-        $group4=array();
-        $group4[] = $mform->createElement('html', '<p style="margin: 25px">Nível log: </p>');
-        $group4[] = $mform->createElement('text', 'nivellog'); 
-        $mform->setType('nivellog', PARAM_TEXT);      
-        $mform->setDefault('nivellog', '');
-        $mform->addGroup($group4, 'inputnivellog', '', ' ', false);
 
         $mform->addElement('submit', 'filterbutton', get_string('filter')); 
 

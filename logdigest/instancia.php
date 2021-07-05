@@ -25,38 +25,37 @@
 require_once '../../config.php';
 global $USER, $DB, $CFG;
 
-require_once("forms/instancia_form.php");
-
 $PAGE->set_url('/local/logdigest/instancia.php');
 $PAGE->set_context(context_system::instance());
 
 require_login();
 
+// formulario da instancia
+require_once("forms/instancia_form.php");
+
+// definir nome e titulo
 $strpagetitle = get_string('instancia', 'local_logdigest');
 $strpageheading = get_string('instancia', 'local_logdigest');
-
 $PAGE->set_title($strpagetitle);
 $PAGE->set_heading($strpagetitle);
 
+// criar variaveis com os parametros, se houver
 $id = optional_param('id', '', PARAM_TEXT);
 
-
+// caso seja fornecido um id, ao criar o forulario carrager com o id da instancia
 if ($id){
     $mform = new instancia_form("?id=$id");
 } else {
     $mform = new instancia_form();
 }
-
-
 $toform = [];
 
 if ($mform->is_cancelled()) {
-    //Handle form cancel operation, if cancel button is present on form
-    /*redirect("/moodle/local/logdigest/logconfig.php", '', 10);*/
+    //Cajo seja cancelado, redirecionar para a pagina anterior
     $url = new moodle_url('/local/logdigest/logconfig.php');
     redirect($url,'', 10);
 } else if ($fromform = $mform->get_data()) {
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
+    //Caso seja submetido, retorna os dados inseridos/alterados no formulario
     if ($id) {
         //tem id entao atualiza
         $instancia = $DB->get_record('local_logdigest_instancia', ['id'=>$id]);
@@ -66,7 +65,6 @@ if ($mform->is_cancelled()) {
         $DB->update_record('local_logdigest_instancia', $instancia);
         $url = new moodle_url('/local/logdigest/logconfig.php');
         redirect($url, 'Alterações guardadas', 10 , \core\output\notification::NOTIFY_SUCCESS);
-
     } else {
         //nao tem id, então cria novo
         $instancia = new stdClass();
@@ -81,14 +79,18 @@ if ($mform->is_cancelled()) {
 
 
 } else {
+    //No caso de estar a carregar a primeira vez
     if ($id) {
+        // no caso de ter sido fornecido um id, coloca os campos da instancia num objeto.
         $toform = $DB->get_record('local_logdigest_instancia', ['id'=>$id]);
     }
+    
     //coloca o valores predefinidos, se exestirem
     $mform->set_data($toform);
 
     echo $OUTPUT->header();
 
+    // exibir formulario
     $mform->display();
 
     echo $OUTPUT->footer();

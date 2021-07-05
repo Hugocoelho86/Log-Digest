@@ -35,11 +35,6 @@ class historicolog_form extends moodleform {
         $mform->setType('intervalo', PARAM_INT);      
         $mform->setDefault('intervalo', '');
 
-        $mform->addElement('select', 'frequencia', 'Frequência em que os logs são purgados:', $frequencia); 
-        $mform->setType('frequencia', PARAM_INT);      
-        $mform->setDefault('frequencia', '');
-
-
         $mform->addElement('submit', 'submitbutton', get_string('save'));
     
         

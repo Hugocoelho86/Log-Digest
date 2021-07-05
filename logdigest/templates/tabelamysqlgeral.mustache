@@ -1,0 +1,23 @@
+<div class="card">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Thread ID</th>
+        <th>Tipo</th>
+        <th>Mensagem</th>
+      </tr>
+    </thead>
+    {{#log}}
+      <tr>
+        <td>{{{tempo}}}</td>
+        <td>{{{threadid}}}</td>
+        <td>{{{tipo}}}</td>
+        <td>{{{mensagem}}}</td>
+      </tr>
+    {{/log}}
+  </table>
+  {{^log}}
+  <div class="card-body"><p>Não foram encontrados nenhuns logs</p></div>
+    {{/log}}
+</div>

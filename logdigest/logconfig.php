@@ -29,65 +29,52 @@ $PAGE->set_url('/local/logdigest/logconfig.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->requires->js('/local/logdigest/js/js_logconfig.js');
 
-
 require_login();
 
+// formularios
 require_once("forms/historicolog_form.php");
 require_once("forms/deletelogs_form.php");
 
+// definir nome e titulo
 $strpagetitle = get_string('logconfig', 'local_logdigest');
 $strpageheading = get_string('logconfig', 'local_logdigest');
-
 $PAGE->set_title($strpagetitle);
 $PAGE->set_heading($strpagetitle);
+
+// criar url gerenciado pelo moodle
+$indexurl = new moodle_url('/local/logdigest/index.php');
+
+// obter todas as instancias
+$instancias = $DB->get_records('local_logdigest_instancia', null);
 
 //SQL INNER JOIN das tabelas instacia, logs e caminhos
 $sql = "SELECT {local_logdigest_caminholog}.id, {local_logdigest_instancia}.ip, {local_logdigest_instancia}.nome, {local_logdigest_logs}.tecnologia, {local_logdigest_logs}.tipo, {local_logdigest_caminholog}.caminho
 FROM {local_logdigest_instancia}
 INNER JOIN {local_logdigest_caminholog} ON mdl_local_logdigest_instancia.id = {local_logdigest_caminholog}.instanciaid
 INNER JOIN {local_logdigest_logs} ON {local_logdigest_caminholog}.logsid = {local_logdigest_logs}.id;";
-
-$instancias = $DB->get_records('local_logdigest_instancia', null);
-
 $caminho = $DB->get_records_sql($sql, null);
-
 
 //criar formulario para gerir durante quanto tempo vão ser guardados os logs e com que frequencias vão ser purgados
 $to_form = array(
     'historico'=>array('30','60','90', '120'),
     'frequencia'=>array('15','30','45', '60')
 );
-
-$mform = new historicolog_form(null, $to_form);
-
-if ($mform->is_cancelled()) {
-    //Handle form cancel operation, if cancel button is present on form
-    $fromform = $mform->get_data();
-
-    redirect("/local/logdigest/index.php", '', 10);
-} else if ($fromform = $mform->get_data()) {
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
-
-}
-
-
-
-
-
-// criar formulario para apagar os logs de uma determinada data para trás
-$mform_delete = new deletelogs_form();
-
-if ($mform_delete->is_cancelled()) {
-    //Handle form cancel operation, if cancel button is present on form
-
-} else if ($fromform = $mform_delete->get_data()) {
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
+$mform_hlog = new historicolog_form(null, $to_form);
+if ($fromform = $mform_hlog->get_data()) {
+    //Caso seja submetido, guardar configurações
     $url = new moodle_url('/local/logdigest/logconfig.php');
     redirect($url, 'Logs apagados', 10);
 }
 
+// criar formulario para apagar os logs posteriores a uma determinada data
+$mform_delete = new deletelogs_form();
+if ($fromform = $mform_delete->get_data()) {
+    //Caso seja submetido o pedido de eliminação, eliminar logs posteriores a data
+    $url = new moodle_url('/local/logdigest/logconfig.php');
+    redirect($url, 'Logs apagados', 10);
+}
 
-///Criar objeto com variaveis para os templates
+// Criar objeto com variaveis para os templates
 $resultados = new stdClass();
 $resultados->inst = array_values($instancias);
 $resultados->caminhos = array_values($caminho);
@@ -96,19 +83,26 @@ $resultados->urldelinstancia = new moodle_url('/local/logdigest/delete.php?insta
 $resultados->urlcaminho = new moodle_url('/local/logdigest/caminho.php?id');
 $resultados->urldelcaminho = new moodle_url('/local/logdigest/delete.php?caminhoid');
 
+
 echo $OUTPUT->header();
 
-echo $OUTPUT->render_from_template('local_logdigest/tabelainstancias', $resultados);
+// botão para voltar à página inicial
+echo html_writer::start_tag('div');
+echo html_writer::tag('a', 'Voltar', array('class' => 'btn btn-secondary float-right mx-2', 'href'=> $indexurl , 'role' =>'button'));
+echo html_writer::end_tag('div');
+echo html_writer::empty_tag('br');
+echo html_writer::empty_tag('br');
 
+// classe OUTPUT para processar templates com as tabelas
+echo $OUTPUT->render_from_template('local_logdigest/tabelainstancias', $resultados);
 echo $OUTPUT->render_from_template('local_logdigest/tabelacaminhos', $resultados);
 
 echo html_writer::empty_tag('br');
 echo html_writer::empty_tag('hr');
 echo html_writer::empty_tag('br');
 
-$mform->display();
-
+// exibir formularios
+$mform_hlog->display();
 $mform_delete->display();
-
 
 echo $OUTPUT->footer();

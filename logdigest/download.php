@@ -20,6 +20,7 @@ global $USER, $DB, $CFG;
 
 require_login();
 
+// criar variaveis com os parametros, se houver
 $instancia = optional_param('instancia', '', PARAM_INT);
 $logid = optional_param('logid', '', PARAM_INT);
 $idt = optional_param('idt', '', PARAM_INT);
@@ -27,12 +28,14 @@ $fdt = optional_param('fdt', '', PARAM_INT);
 $ip = optional_param('ip', '', PARAM_TEXT);
 $req = optional_param('req', '', PARAM_TEXT);
 $nl = optional_param('nl', '', PARAM_TEXT);
+$tipo = optional_param('tipo', '', PARAM_TEXT);
 $dataformat = optional_param('dataformat', '', PARAM_ALPHA);
 
+
+//Verifica qual tecnologia/tipo de log para extrair dados para exportar ficheiro
 if ($logid == 1){
-
+    //verifica quais campos pesquisados
     if($ip && $nl){
-
         $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
         FROM {local_logdigest_apacheerro}
         WHERE  instanciaid = :id
@@ -43,7 +46,6 @@ if ($logid == 1){
         $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
 
     } else if ($ip){
-
         $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
         FROM {local_logdigest_apacheerro}
         WHERE  instanciaid = :id
@@ -53,7 +55,6 @@ if ($logid == 1){
         $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
 
     } else if ($nl){
-
         $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
         FROM {local_logdigest_apacheerro}
         WHERE  instanciaid = :id
@@ -63,7 +64,6 @@ if ($logid == 1){
         $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
 
     } else if ($idt){
-
         $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
         FROM {local_logdigest_apacheerro}
         WHERE  instanciaid = :id
@@ -72,31 +72,25 @@ if ($logid == 1){
         $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
 
     } else {
-
         $sql="SELECT ipcliente, tempo, nivellog, idprocesso, mensagem
         FROM {local_logdigest_apacheerro}
         WHERE instanciaid = :id";
         $params = array('id' => $instancia);
         $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
-
     }
-
+    // cria os campos do cabeçalho da tabela
     $columns= array(
         'ipcliente' => "IP",
         'tempo' => "Data",
         'nivellog' => "Request",
         'idprocesso' => "Status",
-        'mensagem' => "Size",
+        'mensagem' => "Size"
     );
     
-    
-
 
 } else if ($logid == 2){
 
-
    if($ip && $req){
-
         $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
         FROM {local_logdigest_apacheacesso}
         WHERE  instanciaid = :id
@@ -107,7 +101,6 @@ if ($logid == 1){
         $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
 
    } else if ($ip){
-     
         $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
         FROM {local_logdigest_apacheacesso}
         WHERE  instanciaid = :id
@@ -117,18 +110,15 @@ if ($logid == 1){
         $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
 
    } else if ($req){
-      
         $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
         FROM {local_logdigest_apacheacesso}
         WHERE  instanciaid = :id
         AND tempo BETWEEN :i AND :f
         AND ".$DB->sql_like('pedcliente', ':pc');
         $params = array('id' => $instancia, 'i' => $idt, 'f' => $fdt, 'pc' => '%'.$req.'%');
-        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
-       
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);  
 
    } else if ($idt){
-
         $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
         FROM {local_logdigest_apacheacesso}
         WHERE  instanciaid = :id
@@ -137,35 +127,92 @@ if ($logid == 1){
         $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
 
    } else {
-
         $sql="SELECT ipcliente, tempo, pedcliente, estadret,tamresp, reqheader
         FROM {local_logdigest_apacheacesso}
         WHERE instanciaid = :id";
         $params = array('id' => $instancia);
         $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
-
-
    }
-/*
-    $sql = "SELECT {local_logdigest_apacheacesso}.ipcliente, {local_logdigest_apacheacesso}.tempo, {local_logdigest_apacheacesso}.pedcliente, {local_logdigest_apacheacesso}.estadret, {local_logdigest_apacheacesso}.tamresp, {local_logdigest_apacheacesso}.reqheader
-    FROM {local_logdigest_apacheacesso}
-    WHERE {local_logdigest_apacheacesso}.instanciaid = {$instancia};";
-
-    $logs = $DB->get_recordset_sql($sql, null);*/
 
     $columns= array(
-    'ipcliente' => "IP",
-    'tempo' => "Data",
-    'pedcliente' => "Request",
-    'estadret' => "Status",
-    'tamresp' => "Size",
-    'reqheader' => "Request Header",
+        'ipcliente' => "IP",
+        'tempo' => "Data",
+        'pedcliente' => "Request",
+        'estadret' => "Status",
+        'tamresp' => "Size",
+        'reqheader' => "Request Header"
     );
 
 } else if ($logid == 3){
+    if ($ip){
+        $sql="SELECT tempo, threadid, tipo, codigo, subsistema, mensagem
+        FROM {local_logdigest_mysqlerro}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f
+        AND ".$DB->sql_like('tipo', ':t');
+        $params = array('id' => $instancia, 'i' => $idt, 'f' => $fdt, 't' => '%'.$tipo.'%');
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
+
+    } else if ($idt){
+        $sql="SELECT tempo, threadid, tipo, codigo, subsistema, mensagem
+        FROM {local_logdigest_mysqlerro}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f";
+        $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt);
+        $logs = $DB->get_recordset_sql($sql, $params,  0, 10);
+
+    } else {
+        $sql="SELECT tempo, threadid, tipo, codigo, subsistema, mensagem
+        FROM {local_logdigest_mysqlerro}
+        WHERE instanciaid = :id";
+        $params = array('id' => $instancia);
+        $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
+   }
+
+    $columns= array(
+        'tempo' => "Data",
+        'threadid' => "Thread ID",
+        'tipo' => "Tipo",
+        'codigo' => "codigo",
+        'subsistema' => "Subsistema",
+        'mensagem' => "Mensagem"
+    );
 
 } else if ($logid == 4){
+    if ($ip){
 
+        $sql="SELECT tempo, threadid, tipo, mensagem
+        FROM {local_logdigest_mysqlgeral}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f
+        AND ".$DB->sql_like('tipo', ':t');
+        $params = array('id' => $instancia, 'i' => $idt, 'f' => $fdt, 't' => '%'.$tipo.'%');
+        $logs = $DB->get_recordset_sql($sql, $params,  0, $maxlog);
+
+    } else if ($idt){
+
+        $sql="SELECT tempo, threadid, tipo, mensagem
+        FROM {local_logdigest_mysqlgeral}
+        WHERE  instanciaid = :id
+        AND tempo BETWEEN :i AND :f";
+        $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt);
+        $logs = $DB->get_recordset_sql($sql, $params,  0, $maxlog);
+
+    } else {
+        $sql="SELECT tempo, threadid, tipo, mensagem
+        FROM {local_logdigest_mysqlgeral}
+        WHERE instanciaid = :id";
+        $params = array('id' => $instancia);
+        $logs = $DB->get_recordset_sql($sql, $params, 0, 10);
+
+    }
+
+    $columns= array(
+        'tempo' => "Data",
+        'threadid' => "Thread ID",
+        'tipo' => "Tipo",
+        'mensagem' => "Mensagem"
+    );
 } 
 
 

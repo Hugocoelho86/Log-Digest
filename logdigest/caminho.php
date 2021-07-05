@@ -28,28 +28,29 @@ global $USER, $DB, $CFG;
 $PAGE->set_url('/local/logdigest/caminho.php');
 $PAGE->set_context(context_system::instance());
 
-$id = optional_param('id', '', PARAM_TEXT);
-
 require_login();
 
+// formulario da instancia
 require_once("forms/caminho_form.php");
 
+// definir nome e titulo
 $strpagetitle = get_string('caminho', 'local_logdigest');
 $strpageheading = get_string('caminho', 'local_logdigest');
-
 $PAGE->set_title($strpagetitle);
 $PAGE->set_heading($strpagetitle);
 
-$valores=[];
+// criar variaveis com os parametros, se houver
+$id = optional_param('id', '', PARAM_TEXT);
 
+$valores=[];
+$instancias = [];
+$tecnologia = [];
+$tipo = [];
 
 // obter instancias para seletor do formulario
 $sql = "SELECT DISTINCT id, ip
 FROM {local_logdigest_instancia};";
-
 $dados = array_values($DB->get_records_sql($sql, null));
-$instancias = [];
-
 foreach ($dados as $key => $value){
     $instancias[$dados[$key]->id] = $dados[$key]->ip;
 }
@@ -58,10 +59,7 @@ foreach ($dados as $key => $value){
 // obter tecnologias para seletor do formulario
 $sql = "SELECT DISTINCT tecnologia
 FROM {local_logdigest_logs};";
-
 $dados = array_values($DB->get_records_sql($sql, null));
-$tecnologia = [];
-
 foreach ($dados as $key => $value){
     $tecnologia[$dados[$key]->tecnologia] = $dados[$key]->tecnologia;
 }
@@ -69,34 +67,26 @@ foreach ($dados as $key => $value){
 // obter tipo para seletor do formulario
 $sql = "SELECT DISTINCT tipo
 FROM {local_logdigest_logs};";
-
 $dados = array_values($DB->get_records_sql($sql, null));
-$tipo = [];
-
 foreach ($dados as $key => $value){
     $tipo[$dados[$key]->tipo] = $dados[$key]->tipo;
 }
 
-
-
-
-
+//criar variavel com os campos a passar para o formulario
 $toform = array('inst'=>$instancias, 'tec'=>$tecnologia, 'tipo'=>$tipo);
 
-
+// caso seja fornecido um id, ao criar o forulario carrager com o id da instancia
 if ($id){
     $mform = new caminho_form("?id=$id", $toform);
 } else {
     $mform = new caminho_form(null, $toform);
 }
-
-
 if ($mform->is_cancelled()) {
-    //Handle form cancel operation, if cancel button is present on form
+    //Cajo seja cancelado, redirecionar para a pagina anterior
     $url = new moodle_url('/local/logdigest/logconfig.php');
     redirect($url,'', 10);
 } else if ($fromform = $mform->get_data()) {
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
+    //Caso seja submetido, retorna os dados inseridos/alterados no formulario
     if ($id) {
         //tem id entao atualiza
         $caminholog = $DB->get_record('local_logdigest_caminholog', ['id'=>$id]);
@@ -123,17 +113,16 @@ if ($mform->is_cancelled()) {
     }
 
 } else {
+    //No caso de estar a carregar a primeira vez
     if ($id) {
+        // no caso de ter sido fornecido um id, coloca os campos dos caminhos e log num objeto.
         $resultado = $DB->get_record('local_logdigest_caminholog', ['id'=>$id]);
-        
         $logs =  $DB->get_record('local_logdigest_logs', ['id'=>$resultado->logsid]);
-
         $valores = new stdClass();
         $valores->instancia = $resultado->instanciaid;
         $valores->tecnologia =  $logs->tecnologia;
         $valores->tipo =  $logs->tipo;
         $valores->caminho =  $resultado->caminho;
-
     }
     
     //coloca o valores predefinidos, se exestirem
