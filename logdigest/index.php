@@ -22,8 +22,10 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 require_once '../../config.php';
 global $USER, $DB, $CFG;
+
 
 $PAGE->set_url('/local/logdigest/index.php');
 $PAGE->set_context(context_system::instance());
@@ -32,7 +34,11 @@ $PAGE->requires->js('/local/logdigest/js/js_index.js');
 require_login();
 
 // formularios
-require_once("forms/logdigest_instancia_form.php");
+//require_once("forms/logdigest_instancia_form.php");
+
+use local_logdigest\local\modelo;
+
+$mod = new modelo();
 
 // definir nome e titulo
 $strpagetitle = get_string('logdigest', 'local_logdigest');
@@ -85,6 +91,7 @@ echo html_writer::empty_tag('br');
 
 // processar tabela com os logs disponiveis para analise
 echo $OUTPUT->render_from_template('local_logdigest/tabelacaminhosanalise', $resultados);
+
 
 echo $OUTPUT->footer();
 

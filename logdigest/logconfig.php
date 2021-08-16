@@ -29,7 +29,13 @@ $PAGE->set_url('/local/logdigest/logconfig.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->requires->js('/local/logdigest/js/js_logconfig.js');
 
+define('logconfig', TRUE);
+
 require_login();
+
+use local_logdigest\local\modelo;
+
+$mod = new modelo();
 
 // formularios
 require_once("forms/historicolog_form.php");
@@ -54,16 +60,28 @@ INNER JOIN {local_logdigest_caminholog} ON mdl_local_logdigest_instancia.id = {l
 INNER JOIN {local_logdigest_logs} ON {local_logdigest_caminholog}.logsid = {local_logdigest_logs}.id;";
 $caminho = $DB->get_records_sql($sql, null);
 
+
+$tmpretencao = $DB->get_record('local_logdigest_param', ['chave'=>'tmpretencao']);
+
 //criar formulario para gerir durante quanto tempo vão ser guardados os logs e com que frequencias vão ser purgados
 $to_form = array(
-    'historico'=>array('30','60','90', '120'),
-    'frequencia'=>array('15','30','45', '60')
+    'historico'=>array('30','60','90', '120', '180', '365'),
 );
+
+
+
+$valores = new stdClass();
+//$valores->retencao = $tmpretencao->valor;
+$valores->retencao = array_search($tmpretencao->valor, $to_form['historico']);
+
+
 $mform_hlog = new historicolog_form(null, $to_form);
 if ($fromform = $mform_hlog->get_data()) {
     //Caso seja submetido, guardar configurações
+    $tmpretencao->valor=$to_form['historico'][$fromform->retencao];
+    $DB->update_record('local_logdigest_param', $tmpretencao);
     $url = new moodle_url('/local/logdigest/logconfig.php');
-    redirect($url, 'Logs apagados', 10);
+    redirect($url, 'Tempo de retenção dos logs alterado', 10);
 }
 
 // criar formulario para apagar os logs posteriores a uma determinada data
@@ -83,6 +101,8 @@ $resultados->urldelinstancia = new moodle_url('/local/logdigest/delete.php?insta
 $resultados->urlcaminho = new moodle_url('/local/logdigest/caminho.php?id');
 $resultados->urldelcaminho = new moodle_url('/local/logdigest/delete.php?caminhoid');
 
+
+$mform_hlog->set_data($valores);
 
 echo $OUTPUT->header();
 
@@ -104,5 +124,6 @@ echo html_writer::empty_tag('br');
 // exibir formularios
 $mform_hlog->display();
 $mform_delete->display();
+
 
 echo $OUTPUT->footer();

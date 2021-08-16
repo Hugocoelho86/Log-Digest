@@ -27,13 +27,12 @@ class historicolog_form extends moodleform {
         $mform = $this->_form; // Don't forget the underscore! 
 
         $historico = $this->_customdata['historico'];
-        $frequencia = $this->_customdata['frequencia'];
 
-        $mform->addElement('html', '<br><h2>Histório Logs</h2><br>');
+        $mform->addElement('html', '<br><h2>Histórico Logs</h2><br>');
 
-        $mform->addElement('select', 'intervalo', 'Período de dias para guardar os logs:', $historico); 
-        $mform->setType('intervalo', PARAM_INT);      
-        $mform->setDefault('intervalo', '');
+        $mform->addElement('select', 'retencao', 'Período de dias para guardar os logs:', $historico); 
+        $mform->setType('retencao', PARAM_INT);      
+        $mform->setDefault('retencao', '');
 
         $mform->addElement('submit', 'submitbutton', get_string('save'));
     

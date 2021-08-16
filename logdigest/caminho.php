@@ -28,6 +28,7 @@ global $USER, $DB, $CFG;
 $PAGE->set_url('/local/logdigest/caminho.php');
 $PAGE->set_context(context_system::instance());
 
+
 require_login();
 
 // formulario da instancia
@@ -39,8 +40,13 @@ $strpageheading = get_string('caminho', 'local_logdigest');
 $PAGE->set_title($strpagetitle);
 $PAGE->set_heading($strpagetitle);
 
+// criar url gerenciado pelo moodle referente a página inicial
+$urllogdigest = new moodle_url('/local/logdigest/index.php');
+
+
 // criar variaveis com os parametros, se houver
-$id = optional_param('id', '', PARAM_TEXT);
+$id = optional_param('id_update', '', PARAM_TEXT);
+
 
 $valores=[];
 $instancias = [];
@@ -75,12 +81,13 @@ foreach ($dados as $key => $value){
 //criar variavel com os campos a passar para o formulario
 $toform = array('inst'=>$instancias, 'tec'=>$tecnologia, 'tipo'=>$tipo);
 
-// caso seja fornecido um id, ao criar o forulario carrager com o id da instancia
+// caso seja fornecido um id, ao criar o forulario carrager com o id do caminho
 if ($id){
     $mform = new caminho_form("?id=$id", $toform);
 } else {
     $mform = new caminho_form(null, $toform);
 }
+
 if ($mform->is_cancelled()) {
     //Cajo seja cancelado, redirecionar para a pagina anterior
     $url = new moodle_url('/local/logdigest/logconfig.php');
@@ -111,7 +118,8 @@ if ($mform->is_cancelled()) {
         redirect($url, 'Caminho adicionado', 10 , \core\output\notification::NOTIFY_SUCCESS);
         
     }
-
+} else if(!isset($_POST['id_update']) && !isset($_POST['novo'])){
+    redirect($urllogdigest , 'Não pode aceder a essa página diretamente', 10, \core\output\notification::NOTIFY_ERROR);
 } else {
     //No caso de estar a carregar a primeira vez
     if ($id) {
@@ -125,6 +133,10 @@ if ($mform->is_cancelled()) {
         $valores->caminho =  $resultado->caminho;
     }
     
+
+   
+   
+
     //coloca o valores predefinidos, se exestirem
     $mform->set_data($valores);
 

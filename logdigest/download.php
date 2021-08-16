@@ -20,6 +20,9 @@ global $USER, $DB, $CFG;
 
 require_login();
 
+// criar url gerenciado pelo moodle referente a página inicial
+$urllogdigest = new moodle_url('/local/logdigest/index.php');
+
 // criar variaveis com os parametros, se houver
 $instancia = optional_param('instancia', '', PARAM_INT);
 $logid = optional_param('logid', '', PARAM_INT);
@@ -213,7 +216,9 @@ if ($logid == 1){
         'tipo' => "Tipo",
         'mensagem' => "Mensagem"
     );
-} 
+} else {
+    redirect($urllogdigest , 'Não pode aceder a essa página diretamente', 10, \core\output\notification::NOTIFY_ERROR);
+}
 
 
 

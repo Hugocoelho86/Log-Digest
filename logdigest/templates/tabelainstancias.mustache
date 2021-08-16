@@ -1,5 +1,13 @@
 <div class="card">
-<div class="card-body"> <h3 class="float-left">Instancias</h3> <a href="/moodle/local/logdigest/instancia.php" class="btn btn-secondary float-right">Adicionar</a><br></div></div>
+<div class="card-body">
+  <h3 class="float-left">Instancias</h3> 
+    <form method='post' action='instancia.php'>
+              <input type="hidden" name="novo" value="1">
+              <button type="submit" class="btn btn-secondary float-right">
+                Adicionar
+              </button>
+          </form>
+    <br></div></div>
 <div class="card">
   <table class="table table-striped">
     <thead>
@@ -16,8 +24,22 @@
         <td>{{{ip}}}</td>
         <td>{{{nome}}}</td>
         <td>{{{descricao}}}</td>
-        <td><a href="{{urlinstancia}}={{id}}"><i class="fa fa-edit"></i>                </td>
-        <td><a href="{{urldelinstancia}}={{id}}" onclick="return deleteconfirm('Dejesa apagar a instancia e todos os caminhos e logs associados?')"><i class="fa fa-trash-o"></i>                </td>
+        <td>
+          <form method='post' action='instancia.php'>
+              <input type="hidden" name="id_update" value="{{id}}">
+              <button type="submit" class="btn btn-link float-right">
+                          <i class="fa fa-edit"></i>
+              </button>
+          </form>
+          </td>
+          <td>
+          <form method='post' action='delete.php'>
+              <input type="hidden" name="instancia_del" value="{{id}}">
+              <button type="submit" class="btn btn-link" onclick="return deleteconfirm('Dejesa apagar a instancia e todos os caminhos e logs associados?')">
+                          <i class="fa fa-trash-o"></i>
+              </button>
+          </form>
+          </td>
       </tr>
     {{/inst}}
   </table>

@@ -39,8 +39,15 @@ $strpageheading = get_string('instancia', 'local_logdigest');
 $PAGE->set_title($strpagetitle);
 $PAGE->set_heading($strpagetitle);
 
+// criar url gerenciado pelo moodle referente a página inicial
+$urllogdigest = new moodle_url('/local/logdigest/index.php');
+
+
 // criar variaveis com os parametros, se houver
-$id = optional_param('id', '', PARAM_TEXT);
+$id = optional_param('id_update', '', PARAM_TEXT);
+
+
+$toform = [];
 
 // caso seja fornecido um id, ao criar o forulario carrager com o id da instancia
 if ($id){
@@ -48,7 +55,6 @@ if ($id){
 } else {
     $mform = new instancia_form();
 }
-$toform = [];
 
 if ($mform->is_cancelled()) {
     //Cajo seja cancelado, redirecionar para a pagina anterior
@@ -76,7 +82,8 @@ if ($mform->is_cancelled()) {
         redirect($url, 'Instancia adicionada', 10 , \core\output\notification::NOTIFY_SUCCESS);
 
     }
-
+} else if(!isset($_POST['id_update']) && !isset($_POST['novo'])){
+    redirect($urllogdigest , 'Não pode aceder a essa página diretamente', 10, \core\output\notification::NOTIFY_ERROR);
 
 } else {
     //No caso de estar a carregar a primeira vez

@@ -373,7 +373,7 @@ if ($logid == 1){
 
 } else {
     // caso na tenha sido submetido nenhum logid, retorna a pagina index
-    redirect($indexurl, '', 10);
+    redirect($indexurl , 'Não pode aceder a essa página diretamente', 10, \core\output\notification::NOTIFY_ERROR);
 }
 
 // passar unix date para userdate

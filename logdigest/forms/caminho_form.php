@@ -50,7 +50,16 @@ class caminho_form extends moodleform {
         
         $mform->addElement('text', 'caminho', 'Caminho', ' size="50%" '); // Add elements to your form
         $mform->setType('caminho', PARAM_TEXT);                   //Set type of element
-        $mform->setDefault('caminho', '');    
+        $mform->setDefault('caminho', '');  
+        //$mform->addRule('caminho', 'É necessário inserir um caminho', 'required');
+        $mform->addRule('caminho', 'É necessário inserir um caminho', 'required', null, 'client', false, false);
+        $mform->addRule('caminho', 'bad regex', 'regex', '/^(\\ [a-zA-Z]+)+\.log/', 'client');
+
+        /*$mform->addElement('text','shortname', get_string('shortname'),'maxlength="15" size="10"');
+        $mform->setHelpButton('shortname', array('courseshortname', get_string('shortname')), true);
+        $mform->setDefault('shortname', get_string('defaultcourseshortname'));
+        $mform->addRule('shortname', null, 'required', null, 'client');
+        $mform->setType('shortname', PARAM_MULTILANG);*/
 
         $buttonarray=array();
         $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('savechanges'));

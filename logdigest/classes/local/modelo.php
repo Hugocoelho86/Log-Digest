@@ -128,4 +128,8 @@
             $query = "id IN (SELECT id FROM $CFG->prefix$tabela WHERE instanciaid = $instanciaID AND tempo BETWEEN $datalimite AND $datainicio)";
             return $DB->delete_records_select($tabela, $query);
         }
+
+        public function teste(){
+            echo "funciona";
+        }
     }
