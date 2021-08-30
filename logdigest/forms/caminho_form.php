@@ -29,11 +29,7 @@ class caminho_form extends moodleform {
         $inst = $this->_customdata['inst'];
         $tec = $this->_customdata['tec'];
         $tipo = $this->_customdata['tipo'];
-
-        
-
-        
-       // $mform->addElement('html', $inst[1] );
+    
 
         $mform->addElement('select', 'instancia', 'Instancia', $inst); // Add elements to your form
         $mform->setType('instancia', PARAM_TEXT);                   //Set type of element
@@ -51,20 +47,14 @@ class caminho_form extends moodleform {
         $mform->addElement('text', 'caminho', 'Caminho', ' size="50%" '); // Add elements to your form
         $mform->setType('caminho', PARAM_TEXT);                   //Set type of element
         $mform->setDefault('caminho', '');  
-        //$mform->addRule('caminho', 'É necessário inserir um caminho', 'required');
         $mform->addRule('caminho', 'É necessário inserir um caminho', 'required', null, 'client', false, false);
-        $mform->addRule('caminho', 'bad regex', 'regex', '/^(\\ [a-zA-Z]+)+\.log/', 'client');
-
-        /*$mform->addElement('text','shortname', get_string('shortname'),'maxlength="15" size="10"');
-        $mform->setHelpButton('shortname', array('courseshortname', get_string('shortname')), true);
-        $mform->setDefault('shortname', get_string('defaultcourseshortname'));
-        $mform->addRule('shortname', null, 'required', null, 'client');
-        $mform->setType('shortname', PARAM_MULTILANG);*/
+        //$mform->addRule('caminho', 'bad regex', 'regex', '/^(\\ [a-zA-Z]+)+\.log/', 'client');
 
         $buttonarray=array();
         $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
         $buttonarray[] = $mform->createElement('cancel', 'cancelbutton', get_string('cancel'));
         $mform->addGroup($buttonarray, 'buttonar', '', ' ', false);
+
 
     }
 

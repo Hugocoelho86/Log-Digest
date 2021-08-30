@@ -64,6 +64,8 @@ if(isset($_POST['instancia_del'])){
     $caminho = $DB->get_record('local_logdigest_caminholog', ['id'=>$caminhoid]);
     $instancia = $DB->get_record('local_logdigest_instancia', ['id'=>$caminho->instanciaid]);
     $logs = $DB->get_record('local_logdigest_logs', ['id'=>$caminho->logsid]);
+    $dbtable = 'local_logdigest_' . $logs->tecnologia . $logs->tipo;
+    $DB->delete_records($dbtable, ['instanciaid'=>$instancia->instanciaid]);     
     $DB->delete_records('local_logdigest_caminholog', ['id'=>$caminhoid]);
     $url = new moodle_url('/local/logdigest/logconfig.php');
     redirect($url, 'Caminho apagado', 10 , \core\output\notification::NOTIFY_SUCCESS); 

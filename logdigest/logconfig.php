@@ -36,6 +36,7 @@ require_login();
 use local_logdigest\local\modelo;
 
 $mod = new modelo();
+$h = '';
 
 // formularios
 require_once("forms/historicolog_form.php");
@@ -88,8 +89,15 @@ if ($fromform = $mform_hlog->get_data()) {
 $mform_delete = new deletelogs_form();
 if ($fromform = $mform_delete->get_data()) {
     //Caso seja submetido o pedido de eliminação, eliminar logs posteriores a data
+    $dbtec = array_values($DB->get_records('local_logdigest_logs', null));
+    $dblog = 'local_logdigest_';
+    $dbtable = '';
+    foreach ($dbtec as $value) {
+        $dbtable = $dblog . $value->tecnologia . $value->tipo;
+        $DB->delete_records_select($dbtable, 'tempo < '. $fromform->data);     
+    }
     $url = new moodle_url('/local/logdigest/logconfig.php');
-    redirect($url, 'Logs apagados', 10);
+    redirect($url, $h . 'Logs apagados', 10);
 }
 
 // Criar objeto com variaveis para os templates
@@ -101,6 +109,10 @@ $resultados->urldelinstancia = new moodle_url('/local/logdigest/delete.php?insta
 $resultados->urlcaminho = new moodle_url('/local/logdigest/caminho.php?id');
 $resultados->urldelcaminho = new moodle_url('/local/logdigest/delete.php?caminhoid');
 
+
+$teste = $DB->get_record('local_logdigest_logs', ['id'=>'2']);
+$teste2 = $DB->get_record('local_logdigest_caminholog', ['id'=>'2']);
+$teste3 = $DB->get_record('local_logdigest_instancia', ['id'=>'1']);
 
 $mform_hlog->set_data($valores);
 
@@ -115,7 +127,10 @@ echo html_writer::empty_tag('br');
 
 // classe OUTPUT para processar templates com as tabelas
 echo $OUTPUT->render_from_template('local_logdigest/tabelainstancias', $resultados);
-echo $OUTPUT->render_from_template('local_logdigest/tabelacaminhos', $resultados);
+// so processa o template dos caminhos caso já exista alguma instancia
+if ($DB->record_exists('local_logdigest_instancia', array() )){
+    echo $OUTPUT->render_from_template('local_logdigest/tabelacaminhos', $resultados);
+}
 
 echo html_writer::empty_tag('br');
 echo html_writer::empty_tag('hr');
@@ -124,6 +139,5 @@ echo html_writer::empty_tag('br');
 // exibir formularios
 $mform_hlog->display();
 $mform_delete->display();
-
 
 echo $OUTPUT->footer();

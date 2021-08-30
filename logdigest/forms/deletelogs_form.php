@@ -30,10 +30,13 @@ class deletelogs_form extends moodleform {
 
         $mform->addElement('html', '<br><h2>Apagar logs</h2><br>');
 
-        $mform->addElement('date_time_selector', 'assesstimestart', 'Anteriores a data e hora selecionadas');
+        $mform->addElement('date_time_selector', 'data', 'Anteriores a data e hora selecionadas');
+        $mform->setType('data', PARAM_INT);
+        $mform->setDefault('data', '');
 
 
         $mform->addElement('submit', 'deletebutton', get_string('delete'), $params);
+
         
     }
 

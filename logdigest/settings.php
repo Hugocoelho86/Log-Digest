@@ -31,6 +31,11 @@ defined('MOODLE_INTERNAL') || die;
 $url = $CFG->wwwroot . '/local/logdigest/index.php';
     $ADMIN->add('reports', new admin_externalpage('logdigest', get_string('logdigest', 'local_logdigest'), $url));
 
+
+$manageurl =   $CFG->wwwroot . '/local/logdigest/logconfig.php';
+    $ADMIN->add('localplugins', new admin_externalpage('managelogdigest', 'Manage Log Digest', $manageurl));
+
+
 /*$ADMIN->add('reports', new admin_externalpage('digestlog', get_string('log', 'admin'),
         $CFG->wwwroot . "/report/log/index.php?id=0", 'report/log:view'));*/
 

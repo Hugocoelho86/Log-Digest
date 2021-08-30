@@ -45,7 +45,7 @@ $urllogdigest = new moodle_url('/local/logdigest/index.php');
 
 
 // criar variaveis com os parametros, se houver
-$id = optional_param('id_update', '', PARAM_TEXT);
+$id = optional_param('id', '', PARAM_TEXT);
 
 
 $valores=[];
@@ -118,7 +118,7 @@ if ($mform->is_cancelled()) {
         redirect($url, 'Caminho adicionado', 10 , \core\output\notification::NOTIFY_SUCCESS);
         
     }
-} else if(!isset($_POST['id_update']) && !isset($_POST['novo'])){
+} else if(!(isset($_POST['id']) || isset($_POST['novo']))){
     redirect($urllogdigest , 'Não pode aceder a essa página diretamente', 10, \core\output\notification::NOTIFY_ERROR);
 } else {
     //No caso de estar a carregar a primeira vez
@@ -143,7 +143,7 @@ if ($mform->is_cancelled()) {
     echo $OUTPUT->header();
 
     $mform->display();
-
+    
     echo $OUTPUT->footer();
 
 

@@ -310,7 +310,7 @@ if ($logid == 1){
     }
 
     $resultados->log = array_values($logs);
-    $templatetabela = 'local_logdigest/tabelaapacheerro';
+    $templatetabela = 'local_logdigest/tabelamysqlerro';
 
     if ($fromfiltro = $filtro->get_data()) {
         //Caso o formulario tenha sido submetido, recarregar a pagina com novos parametros para as pesquisas SQL
@@ -356,7 +356,7 @@ if ($logid == 1){
     }
 
     $resultados->log = array_values($logs);
-    $templatetabela = 'local_logdigest/tabelaapachegeral';
+    $templatetabela = 'local_logdigest/tabelamysqlgeral';
 
     if ($fromfiltro = $filtro->get_data()) {
         //Caso o formulario tenha sido submetido, recarregar a pagina com novos parametros para as pesquisas SQL
@@ -394,6 +394,8 @@ foreach ($resultados->log as $value){
 }
 
 echo $OUTPUT->header();
+
+//var_dump($logs);
 
 // botões de atalho
 echo html_writer::empty_tag('br');
