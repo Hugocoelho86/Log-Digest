@@ -38,7 +38,7 @@ require_once("forms/caminho_form.php");
 $strpagetitle = get_string('caminho', 'local_logdigest');
 $strpageheading = get_string('caminho', 'local_logdigest');
 $PAGE->set_title($strpagetitle);
-$PAGE->set_heading($strpagetitle);
+$PAGE->set_heading($strpageheading);
 
 // criar url gerenciado pelo moodle referente a página inicial
 $urllogdigest = new moodle_url('/local/logdigest/index.php');
@@ -61,25 +61,14 @@ foreach ($dados as $key => $value){
     $instancias[$dados[$key]->id] = $dados[$key]->ip;
 }
 
-
-// obter tecnologias para seletor do formulario
-$sql = "SELECT DISTINCT tecnologia
-FROM {local_logdigest_logs};";
-$dados = array_values($DB->get_records_sql($sql, null));
+// obter tipos de logs para seletor do formulario
+$dados = array_values($DB->get_records('local_logdigest_logs'));
 foreach ($dados as $key => $value){
-    $tecnologia[$dados[$key]->tecnologia] = $dados[$key]->tecnologia;
-}
-
-// obter tipo para seletor do formulario
-$sql = "SELECT DISTINCT tipo
-FROM {local_logdigest_logs};";
-$dados = array_values($DB->get_records_sql($sql, null));
-foreach ($dados as $key => $value){
-    $tipo[$dados[$key]->tipo] = $dados[$key]->tipo;
+    $tipologs[$dados[$key]->id] = ucfirst($dados[$key]->tecnologia) . ' - ' . ucfirst($dados[$key]->tipo);
 }
 
 //criar variavel com os campos a passar para o formulario
-$toform = array('inst'=>$instancias, 'tec'=>$tecnologia, 'tipo'=>$tipo);
+$toform = array('inst'=>$instancias, 'tipolog'=>$tipologs);
 
 // caso seja fornecido um id, ao criar o forulario carrager com o id do caminho
 if ($id){
@@ -98,9 +87,7 @@ if ($mform->is_cancelled()) {
         //tem id entao atualiza
         $caminholog = $DB->get_record('local_logdigest_caminholog', ['id'=>$id]);
         $caminholog->instanciaid = $fromform->instancia;
-        $logs =  $DB->get_record('local_logdigest_logs', ['id'=>1]);
-        $logs =  $DB->get_record('local_logdigest_logs', array('tecnologia'=>$fromform->tecnologia,'tipo'=>$fromform->tipo));
-        $caminholog->logsid = $logs->id;
+        $caminholog->logsid = $fromform->tipolog;
         $caminholog->caminho = $fromform->caminho;
         $DB->update_record('local_logdigest_caminholog', $caminholog);
         $url = new moodle_url('/local/logdigest/logconfig.php');
@@ -109,16 +96,14 @@ if ($mform->is_cancelled()) {
         //nao tem id, então cria novo
         $caminholog = new stdClass();
         $caminholog->instanciaid = $fromform->instancia;
-        $logs =  $DB->get_record('local_logdigest_logs', ['id'=>1]);
-        $logs =  $DB->get_record('local_logdigest_logs', array('tecnologia'=>$fromform->tecnologia,'tipo'=>$fromform->tipo));
-        $caminholog->logsid = $logs->id;
+        $caminholog->logsid = $fromform->tipolog;
         $caminholog->caminho = $fromform->caminho;
         $newid = $DB->insert_record('local_logdigest_caminholog', $caminholog, true, false);
         $url = new moodle_url('/local/logdigest/logconfig.php');
         redirect($url, 'Caminho adicionado', 10 , \core\output\notification::NOTIFY_SUCCESS);
         
     }
-} else if(!(isset($_POST['id']) || isset($_POST['novo']))){
+} else if(!(isset($_POST['id']) || isset($_POST['novo'])) && is_null($mform->is_validated())){
     redirect($urllogdigest , 'Não pode aceder a essa página diretamente', 10, \core\output\notification::NOTIFY_ERROR);
 } else {
     //No caso de estar a carregar a primeira vez
@@ -128,14 +113,12 @@ if ($mform->is_cancelled()) {
         $logs =  $DB->get_record('local_logdigest_logs', ['id'=>$resultado->logsid]);
         $valores = new stdClass();
         $valores->instancia = $resultado->instanciaid;
-        $valores->tecnologia =  $logs->tecnologia;
-        $valores->tipo =  $logs->tipo;
+        $valores->tipolog =  $resultado->logsid;
         $valores->caminho =  $resultado->caminho;
     }
     
 
-   
-   
+
 
     //coloca o valores predefinidos, se exestirem
     $mform->set_data($valores);

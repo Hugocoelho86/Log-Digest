@@ -36,12 +36,6 @@ require_once("forms/filtromysqlerro_form.php");
 require_once("forms/filtromysqlgeral_form.php");
 require_once("forms/download_form.php");
 
-// definir nome e titulo
-$strpagetitle = get_string('logdigest', 'local_logdigest');
-$strpageheading = get_string('logdigest', 'local_logdigest');
-$PAGE->set_title($strpagetitle);
-$PAGE->set_heading($strpagetitle);
-
 // criar variaveis com os parametros, se houver
 $instancia = optional_param('instancia', '', PARAM_INT);
 $logid = optional_param('logid', '', PARAM_INT);
@@ -60,6 +54,16 @@ $configurl = new moodle_url('/local/logdigest/logconfig.php');
 $downloadurl = new moodle_url('/local/logdigest/download.php');
 $PAGE->set_url('/local/logdigest/analiselog.php', array('instancia'=>$instancia, 'logid'=>$logid));
 
+//objetos da instancia e tecnologia
+$objinstancia = $DB->get_record('local_logdigest_instancia', ['id' => $instancia]);
+$objtipol = $DB->get_record('local_logdigest_logs', ['id' => $logid]);
+
+// definir nome e titulo
+$strpagetitle = strtoupper($objinstancia->nome) . ': ' . ucfirst($objtipol->tecnologia) . ' - ' . ucfirst($objtipol->tipo);
+$strpageheading = get_string('analiselog', 'local_logdigest') . ' ' . ucfirst($objtipol->tecnologia) . ' - ' . ucfirst($objtipol->tipo);
+$PAGE->set_title($strpagetitle);
+$PAGE->set_heading($strpageheading);
+
 
 $resultados = new stdClass();
 $maxlog = 1000;
@@ -77,15 +81,18 @@ if ($fromform = $downloadform->get_data()) {
 }
 
 
-// Requests para analise no Chart Pie
-$reqtype = ["GET", "POST", "PUT", "HEAD", "DELETE", "PATCH", "OPTIONS"];
-$reqcount = [];
+
  
 //Verifica qual tecnologia/tipo de log, para criar o formulario de pesquisa especifico e tabelas
 if ($logid == 1){
     //cria formulario de pesquisa
     $filtro = new filtroapacheerro_form();
     $filtro->set_data(array('instancia'=> $instancia, 'logid'=> $logid)); 
+
+    // Nivel Erro para analise no Chart Pie
+    $chartfields = ["notice", "error", "warn", "outros"];
+    $chartcount = [];
+    
 
     //verifica quais campos a pesquisar
     if($ip && $nl){
@@ -107,6 +114,24 @@ if ($logid == 1){
         $params = array('id' => $instancia, 'i' => $idt, 'f' => $fdt, 'o' => '%'.$ip.'%');
         $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
 
+         // faz a contagem dos niveis erro para apresentar no chart pie
+         foreach ($chartfields as $key => $value){
+            if ($value !== "outros"){
+                $sqlcount="SELECT COUNT(*) AS ncount
+                FROM {local_logdigest_apacheerro}
+                WHERE  instanciaid = :id
+                AND tempo BETWEEN :i AND :f
+                AND ".$DB->sql_like('nivellog', ':pc')."
+                AND ".$DB->sql_like('ipcliente', ':o');
+                $pcount = array('id' => $instancia, 'pc' => '%'.$value.'%', 'i' => $idt, 'f' => $fdt, 'o' => '%'.$ip.'%');
+                $count = array_values($DB->get_records_sql($sqlcount, $pcount));
+                $chartcount[$key] = $count[0]->ncount;
+            } else {
+                $chartcount[$key] = count(array_values($logs)) - array_sum($chartcount);
+            }
+            
+        } 
+
     } else if ($nl){
         $sql="SELECT *
         FROM {local_logdigest_apacheerro}
@@ -122,12 +147,47 @@ if ($logid == 1){
         WHERE  instanciaid = :id
         AND tempo BETWEEN :i AND :f";
         $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt);
-        $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
+        $logs = $DB->get_records_sql($sql, $params);
+
+
+        // faz a contagem dos niveis erro para apresentar no chart pie
+        foreach ($chartfields as $key => $value){
+            if ($value !== "outros"){
+                $sqlcount="SELECT COUNT(*) AS ncount
+                FROM {local_logdigest_apacheerro}
+                WHERE  instanciaid = :id
+                AND tempo BETWEEN :i AND :f
+                AND ".$DB->sql_like('nivellog', ':pc');
+                $pcount = array('id' => $instancia, 'pc' => '%'.$value.'%', 'i' => $idt, 'f' => $fdt);
+                $count = array_values($DB->get_records_sql($sqlcount, $pcount));
+                $chartcount[$key] = $count[0]->ncount;
+            } else {
+                $chartcount[$key] = count(array_values($logs)) - array_sum($chartcount);
+            }
+            
+        } 
 
     } else {
         // a entrar na pagina, pela primeira vez, vai buscar todos os dados do log
         $nlogs = $DB->count_records('local_logdigest_apacheerro', null);
         $logs = $DB->get_records('local_logdigest_apacheerro', ['instanciaid'=>$instancia], '', '*',  0, $maxlog);
+
+        // faz a contagem dos niveis erro para apresentar no chart pie
+        foreach ($chartfields as $key => $value){
+            if ($value !== "outros"){
+                $sql="SELECT COUNT(*) AS ncount
+                FROM {local_logdigest_apacheerro}
+                WHERE  instanciaid = :id
+                AND ".$DB->sql_like('nivellog', ':pc');
+                $params = array('id' => $instancia, 'pc' => '%'.$value.'%');
+                $count = array_values($DB->get_records_sql($sql, $params));
+                $chartcount[$key] = $count[0]->ncount;
+            } else {
+
+                $chartcount[$key] = $DB->count_records('local_logdigest_apacheerro') - array_sum($chartcount);
+            }
+            
+        }
 
     }
 
@@ -161,6 +221,10 @@ if ($logid == 1){
     $filtro = new filtroapacheaccess_form();
     $filtro->set_data(array('instancia'=> $instancia, 'logid'=> $logid)); 
 
+    // Requests para analise no Chart Pie
+    $chartfields = ["GET", "POST", "PUT", "HEAD", "DELETE", "PATCH", "OPTIONS"];
+    $chartcount = [];
+
     //verifica quais campos a pesquisar
     if($ip && $req){
         $sql="SELECT *
@@ -183,7 +247,7 @@ if ($logid == 1){
         $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
 
         // faz a contagem dos requests para apresentar no chart pie
-        foreach ($reqtype as $key => $value){
+        foreach ($chartfields as $key => $value){
             $sql="SELECT COUNT(*)
             FROM {local_logdigest_apacheacesso}
             WHERE  instanciaid = :id
@@ -191,9 +255,8 @@ if ($logid == 1){
             AND ".$DB->sql_like('pedcliente', ':pc')." 
             AND ".$DB->sql_like('ipcliente', ':o');
             $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt, 'pc' => '%'.$value.'%', 'o' => '%'.$ip.'%');
-            $count = $DB->get_records_sql($sql, $params);
-            $reqcount[$key] = array_key_first($count);
-            $totalc = $totalc + array_key_first($count);
+            $count = array_values($DB->get_records_sql($sql, $params));
+            $chartcount[$key] = $count[0]->ncount;
         }
 
 
@@ -215,16 +278,15 @@ if ($logid == 1){
         $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
 
         // faz a contagem dos requests para apresentar no chart pie
-        foreach ($reqtype as $key => $value){
-            $sql="SELECT COUNT(*)
+        foreach ($chartfields as $key => $value){
+            $sql="SELECT COUNT(*) AS ncount
             FROM {local_logdigest_apacheacesso}
             WHERE  instanciaid = :id
             AND tempo BETWEEN :i AND :f
             AND ".$DB->sql_like('pedcliente', ':pc');
             $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt, 'pc' => '%'.$value.'%');
-            $count = $DB->get_records_sql($sql, $params);
-            $reqcount[$key] = array_key_first($count);
-            $totalc = $totalc + array_key_first($count);
+            $count = array_values($DB->get_records_sql($sql, $params));
+            $chartcount[$key] = $count[0]->ncount;
         }
 
     } else {
@@ -233,30 +295,20 @@ if ($logid == 1){
         $logs = $DB->get_records('local_logdigest_apacheacesso', ['instanciaid'=>$instancia], '', '*',  0, $maxlog);
 
         // faz a contagem dos requests para apresentar no chart pie
-        foreach ($reqtype as $key => $value){
-            $sql="SELECT COUNT(*)
+        foreach ($chartfields as $key => $value){
+            $sql="SELECT COUNT(*) AS ncount
             FROM {local_logdigest_apacheacesso}
             WHERE  instanciaid = :id
             AND ".$DB->sql_like('pedcliente', ':pc');
             $params = array('id' => $instancia, 'pc' => '%'.$value.'%');
-            $count = $DB->get_records_sql($sql, $params);
-            $reqcount[$key] = array_key_first($count);
-            $totalc = $totalc + array_key_first($count);
+            $count = array_values($DB->get_records_sql($sql, $params));
+            $chartcount[$key] = $count[0]->ncount;
         }
 
     }
 
     $resultados->log = array_values($logs);
     $templatetabela = 'local_logdigest/tabelaapacheaccess';
-
-    // criar chart pie
-    if ($totalc > 0){
-        $contagem = new \core\chart_series('Quantidade', $reqcount);
-        $chartpie = new \core\chart_pie();
-        $chartpie->set_title('Chart Pie');
-        $chartpie->add_series($contagem);
-        $chartpie->set_labels($reqtype); 
-    }
     
 
     if ($fromfiltro = $filtro->get_data()) {
@@ -285,6 +337,10 @@ if ($logid == 1){
     $filtro = new filtromysqlerro_form();
     $filtro->set_data(array('instancia'=> $instancia, 'logid'=> $logid)); 
 
+    // Tipo Erro para analise no Chart Pie
+    $chartfields = ["System", "ERROR", "Warning", "outros"];
+    $chartcount = [];
+
     //verifica quais campos a pesquisar
     if ($tipo){
         $sql="SELECT *
@@ -302,10 +358,46 @@ if ($logid == 1){
         AND tempo BETWEEN :i AND :f";
         $params = array('id' => $instancia,'i' => $idt, 'f' => $fdt);
         $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
+
+        // faz a contagem dos niveis erro para apresentar no chart pie
+        foreach ($chartfields as $key => $value){
+            if ($value !== "outros"){
+                $sqlcount="SELECT COUNT(*) AS ncount
+                FROM {local_logdigest_mysqlerro}
+                WHERE  instanciaid = :id
+                AND tempo BETWEEN :i AND :f
+                AND ".$DB->sql_like('tipo', ':pc');
+                $pcount = array('id' => $instancia, 'pc' => '%'.$value.'%', 'i' => $idt, 'f' => $fdt);
+                $count = array_values($DB->get_records_sql($sqlcount, $pcount));
+                $chartcount[$key] = $count[0]->ncount;
+            } else {
+                $chartcount[$key] = count(array_values($logs)) - array_sum($chartcount);
+            }
+            
+        } 
+
+
     } else {
         // a entrar na pagina, pela primeira vez, vai buscar todos os dados do log
         $nlogs = $DB->count_records('local_logdigest_mysqlerro', null);
         $logs = $DB->get_records('local_logdigest_mysqlerro', ['instanciaid'=>$instancia], '', '*',  0, $maxlog);
+
+        // faz a contagem dos niveis erro para apresentar no chart pie
+        foreach ($chartfields as $key => $value){
+            if ($value !== "outros"){
+                $sqlcount="SELECT COUNT(*) AS ncount
+                FROM {local_logdigest_mysqlerro}
+                WHERE  instanciaid = :id
+                AND ".$DB->sql_like('tipo', ':pc');
+                $pcount = array('id' => $instancia, 'pc' => '%'.$value.'%');
+                $count = array_values($DB->get_records_sql($sqlcount, $pcount));
+                $chartcount[$key] = $count[0]->ncount;
+            } else {
+
+                $chartcount[$key] = $DB->count_records('local_logdigest_mysqlerro') - array_sum($chartcount);
+            }
+            
+        }
 
     }
 
@@ -329,6 +421,12 @@ if ($logid == 1){
     //cria formulario de pesquisa
     $filtro = new filtromysqlgeral_form();
     $filtro->set_data(array('instancia'=> $instancia, 'logid'=> $logid)); 
+
+
+    // Tipo para analise no Chart Pie
+    $chartfields = [];
+    $chartcount = [];
+
 
     //verifica quais campos a pesquisar
     if ($tipo){
@@ -376,6 +474,16 @@ if ($logid == 1){
     redirect($indexurl , 'Não pode aceder a essa página diretamente', 10, \core\output\notification::NOTIFY_ERROR);
 }
 
+
+// criar chart pie
+if (count($chartcount) > 0){
+    $contagem = new \core\chart_series('Quantidade', $chartcount);
+    $chartpie = new \core\chart_pie();
+    $chartpie->set_title('Chart Pie');
+    $chartpie->add_series($contagem);
+    $chartpie->set_labels($chartfields); 
+}
+
 // passar unix date para userdate
 foreach ($resultados->log as $value){
     $value->tempo = userdate($value->tempo);
@@ -395,10 +503,18 @@ foreach ($resultados->log as $value){
 
 echo $OUTPUT->header();
 
-//var_dump($logs);
+
+/*var_dump($count);
+
+echo '<br>';
+
+var_dump( count($chartcount));*/
+
 
 // botões de atalho
+
 echo html_writer::empty_tag('br');
+echo html_writer::tag('h3', 'Instância: ' . '<b>' . $objinstancia->nome . '</b>', array('class' => 'float-left'));
 echo html_writer::start_tag('div');
 echo html_writer::start_tag('a', array('class' => 'btn btn-secondary float-right ml-2', 'href'=> $configurl , 'role' =>'button'));
 echo html_writer::tag('i', '', array('class' => 'fa fa-cog'));
@@ -406,7 +522,9 @@ echo html_writer::end_tag('a');
 echo html_writer::tag('a', 'Voltar', array('class' => 'btn btn-secondary float-right mx-2', 'href'=> $indexurl , 'role' =>'button'));
 echo html_writer::end_tag('div');
 echo html_writer::empty_tag('br');
+
 echo html_writer::empty_tag('br');
+
 
 //apresentar filtro de pesquisa
 $filtro->display();
@@ -414,7 +532,7 @@ $filtro->display();
 echo html_writer::empty_tag('hr');
 
 // se houver alguma contagem para o chart pie, apresenta este
-if ($totalc > 0){
+if (count($chartcount) > 0){
     echo html_writer::start_tag('div', array('style' => 'width: 800px;margin: auto'));
     echo html_writer::tag('div', $OUTPUT->render($chartpie), array('class' => 'col'));
     echo html_writer::end_tag('div');

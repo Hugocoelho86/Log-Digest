@@ -110,10 +110,6 @@ $resultados->urlcaminho = new moodle_url('/local/logdigest/caminho.php?id');
 $resultados->urldelcaminho = new moodle_url('/local/logdigest/delete.php?caminhoid');
 
 
-$teste = $DB->get_record('local_logdigest_logs', ['id'=>'2']);
-$teste2 = $DB->get_record('local_logdigest_caminholog', ['id'=>'2']);
-$teste3 = $DB->get_record('local_logdigest_instancia', ['id'=>'1']);
-
 $mform_hlog->set_data($valores);
 
 echo $OUTPUT->header();

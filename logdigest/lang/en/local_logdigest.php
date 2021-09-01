@@ -32,6 +32,10 @@ $string['logdigest'] = 'Log digest';
 $string['logconfig'] = 'Log digest - Configuration';
 $string['instancia'] = 'Gerir Instancias';
 $string['caminho'] = 'Gerir Caminhos';
+$string['analiselog'] = 'Análise Logs:';
+$string['ajuda'] = 'como preencher caminho do log'; 
+$string['ajuda_help'] = 'Ex.: "/var/log/apache2/access.log';
+
 
 
 
