@@ -43,11 +43,16 @@ class filtroapacheaccess_form extends moodleform {
         $mform->addElement('hidden', 'logid');
         $mform->setType('logid', PARAM_INT);
 
+        $mform->addElement('hidden', 'ficheiroid');
+        $mform->setType('ficheiroid', PARAM_INT);
+
+
+
         $group1=array();
         $group1[] = $mform->createElement('html', '<p style="margin: 25px">De: </p>');
         $group1[] = $mform->createElement('date_time_selector', 'idata', '');
         $mform->setType('idata', PARAM_INT);
-        $mform->setDefault('idata', '');
+        $mform->setDefault('idata', strtotime("-1 week"));
         $mform->addGroup($group1, 'inicio', '', ' ', false);
 
         $group2=array();
@@ -67,19 +72,35 @@ class filtroapacheaccess_form extends moodleform {
 
         $group4=array();
         $group4[] = $mform->createElement('html', '<p style="margin: 25px">Request: </p>');
-        $group4[] = $mform->createElement('select', 'request', '', $requests); 
-        $mform->setType('request', PARAM_TEXT);      
-        $mform->setDefault('request', '');
+        $group4[] = $mform->createElement('select', 'req', '', $requests); 
+        $mform->setType('req', PARAM_TEXT);      
+        $mform->setDefault('req', '');
         $mform->addGroup($group4, 'inputrequest', '', ' ', false);
 
         $group5=array();
-        $group5[] = $mform->createElement('submit', 'filterbutton', get_string('filter'));   
-        $mform->addGroup($group5, 'buttonar', '', ' ', false); 
+        $group5[] = $mform->createElement('html', '<p style="margin: 25px">Pesquisa: </p>');
+        $group5[] = $mform->createElement('text', 'pesq'); 
+        $mform->setType('pesq', PARAM_TEXT);      
+        $mform->setDefault('pesq', '');
+        $mform->addGroup($group5, 'inputpl', '', ' ', false);
+
+
+        $mform->addElement('checkbox', 'ntratadas', 'Linhas não tratadas.');
+        $mform->hideIf('inputip', 'ntratadas', 'checked');
+        $mform->hideIf('inputrequest', 'ntratadas', 'checked');
+
+        $mform->addElement('submit', 'filterbutton', get_string('filter')); 
         
 
     }
     //Custom validation should be added here
     function validation($data, $files) {
-        return array();
+        $errors= array();
+        if ($data['idata']>$data['idata']){
+            $errors['fim'] = 'Deve escolher uma data inicial menor que a data final.';
+        } else if (strtotime("-1 week", $data['fdata']) > $data['idata']){
+            $errors['fim'] = 'Apenas é permitido efetuar uma pesquisa com 1 semana, de máximo, de intervalo.';
+        }
+        return $errors;
     }
 }

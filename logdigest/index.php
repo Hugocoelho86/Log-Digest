@@ -88,7 +88,6 @@ echo html_writer::end_tag('a');
 echo html_writer::end_tag('div');
 echo html_writer::empty_tag('br');
 echo html_writer::empty_tag('br');
-
 // processar tabela com os logs disponiveis para analise
 echo $OUTPUT->render_from_template('local_logdigest/tabelacaminhosanalise', $resultados);
 

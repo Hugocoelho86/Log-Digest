@@ -2,20 +2,15 @@
   <table class="table table-striped w-auto small">
     <thead>
       <tr>
-        <th>IP</th>
         <th>Data</th>
-        <th>Nivel Erro</th>
-        <th>ID Processo</th>
-        <th>Mensagem</th>
+
+        <th>Linha</th>
       </tr>
     </thead>
     {{#log}}
       <tr>
-        <td>{{{ipcliente}}}</td>
         <td>{{{tempo}}}</td>
-        <td>{{{nivellog}}}</td>
-        <td>{{{idprocesso}}}</td>
-        <td style="max-width: 500px">{{{mensagem}}}</td>
+        <td>{{{linha}}}</td>
       </tr>
     {{/log}}
   </table>

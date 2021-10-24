@@ -32,11 +32,15 @@ class filtromysqlgeral_form extends moodleform {
         $mform->addElement('hidden', 'logid');
         $mform->setType('logid', PARAM_INT);
 
+        $mform->addElement('hidden', 'ficheiroid');
+        $mform->setType('ficheiroid', PARAM_INT);
+
+
         $group1=array();
         $group1[] = $mform->createElement('html', '<p style="margin: 25px">De: </p>');
         $group1[] = $mform->createElement('date_time_selector', 'idata', '');
         $mform->setType('idata', PARAM_INT);
-        $mform->setDefault('idata', '');
+        $mform->setDefault('idata',  strtotime("-1 week"));
         $mform->addGroup($group1, 'inicio', '', ' ', false);
 
         $group2=array();
@@ -54,12 +58,21 @@ class filtromysqlgeral_form extends moodleform {
         $mform->setDefault('tipo', '');
         $mform->addGroup($group3, 'inputtipo', '', ' ', false);
 
+        $mform->addElement('checkbox', 'garbage', 'Linhas não tratadas.');
+        $mform->hideIf('inputtipo', 'garbage', 'checked');
+
         $mform->addElement('submit', 'filterbutton', get_string('filter')); 
 
 
     }
     //Custom validation should be added here
     function validation($data, $files) {
-        return array();
+        $errors= array();
+        if ($data['idata']>$data['idata']){
+            $errors['fim'] = 'Deve escolher uma data inicial menor que a data final.';
+        } else if (strtotime("-1 week", $data['fdata']) > $data['idata']){
+            $errors['fim'] = 'Apenas é permitido efetuar uma pesquisa com 1 semana, de máximo, de intervalo.';
+        }
+        return $errors;
     }
 }

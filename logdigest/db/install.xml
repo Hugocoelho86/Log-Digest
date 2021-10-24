@@ -36,7 +36,6 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="instancia" TYPE="foreign" FIELDS="instanciaid" REFTABLE="local_logdigest_instancia" REFFIELDS="id" COMMENT="FK de Instancia &amp;lt;-&amp;gt; CaminhoLogs"/>
-        <KEY NAME="logs" TYPE="foreign" FIELDS="logsid" REFTABLE="logs" REFFIELDS="id" COMMENT="FK para garantir que o mix de logs existe"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="local_logdigest_apacheerro" COMMENT="Apache Erro">
@@ -44,6 +43,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia que pertence"/>
         <FIELD NAME="tempo" TYPE="number" LENGTH="20" NOTNULL="true" SEQUENCE="false" DECIMALS="10" COMMENT="Tempo unix com microsegundos"/>
+        <FIELD NAME="ficheiroid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia que pertence o log"/>
         <FIELD NAME="nivellog" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Nivel de log (informativo, erro..)"/>
         <FIELD NAME="idprocesso" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID do processo a invocar o erro."/>
         <FIELD NAME="ipcliente" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="IP do cliente"/>
@@ -59,6 +59,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia"/>
+        <FIELD NAME="ficheiroid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia que pertence o log"/>
         <FIELD NAME="tempo" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Temo unix com microsegundos"/>
         <FIELD NAME="linha" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Campo que contem a linha inteira. A ser utilizado apenas em ultimo recurso."/>
         <FIELD NAME="ipcliente" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="IP do cliente"/>
@@ -79,6 +80,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia"/>
+        <FIELD NAME="ficheiroid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia que pertence o log"/>
         <FIELD NAME="linha" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Campo que contem a linha inteira. A ser utilizado apenas em ultimo recurso."/>
         <FIELD NAME="tempo" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Temo unix com microsegundos"/>
         <FIELD NAME="threadid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Id da thread que invocou o log"/>
@@ -96,6 +98,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="instanciaid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia"/>
+        <FIELD NAME="ficheiroid" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="ID da instancia que pertence o log"/>
         <FIELD NAME="linha" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Campo que contem a linha inteira. A ser utilizado apenas em ultimo recurso."/>
         <FIELD NAME="tempo" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Temo unix com microsegundos"/>
         <FIELD NAME="threadid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="ID da thread que corre o comando"/>

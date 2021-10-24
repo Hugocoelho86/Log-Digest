@@ -32,6 +32,9 @@ class download_form extends moodleform {
         $mform->addElement('hidden', 'logid');
         $mform->setType('logid', PARAM_INT);
 
+        $mform->addElement('hidden', 'ficheiroid');
+        $mform->setType('ficheiroid', PARAM_INT);
+
         $mform->addElement('hidden', 'idt');
         $mform->setType('idt', PARAM_INT);
 
@@ -56,14 +59,20 @@ class download_form extends moodleform {
         $mform->addElement('hidden', 'tipo');
         $mform->setType('tipo', PARAM_TEXT);
 
+        $mform->addElement('hidden', 'pesq');
+        $mform->setType('pesq', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'ntratadas');
+        $mform->setType('ntratadas', PARAM_BOOL);
+
        $formatos = array(
             'csv'=>'Valores separados por vírgulas (.csv)',
             'excel'=>'Microsoft Excel (.xlsx)',
-            'pdf'=>'Portable Document Format (.pdf)'
+            //'pdf'=>'Portable Document Format (.pdf)'
         );
 
         $group=array();
-        $group[] = $mform->createElement('html', '<p style="margin: 25px">Expostar logs para: </p>');
+        $group[] = $mform->createElement('html', '<p style="margin: 25px">Exportar logs para: </p>');
         $group[] = $mform->createElement('select', 'formato', 'Formato', $formatos);
         $group[] = $mform->createElement('submit', 'descarregar', get_string('download'));
         $mform->addGroup($group, 'exportar', '', ' ', false);
