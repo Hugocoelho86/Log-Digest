@@ -29,13 +29,10 @@ $string['pluginname'] = 'logdigest';
 $string['recolheficheiros'] = 'Tratamento de ficheiros';
 $string['manuntencaodb'] = 'Manutenção da base de dados';
 $string['logdigest'] = 'Log digest';
-$string['logconfig'] = 'Log digest - Configuration';
+$string['logconfig'] = 'Log digest - Confirguração';
 $string['instancia'] = 'Gerir Instancias';
 $string['caminho'] = 'Gerir Caminhos';
 $string['analiselog'] = 'Análise Logs:';
 $string['ajuda'] = 'como preencher caminho do log'; 
 $string['ajuda_help'] = 'Ex.: "/var/log/apache2/access.log';
-
-
-
-
+$string['gerirlogdigest'] = 'Gerir Log Digest';

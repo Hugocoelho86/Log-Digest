@@ -33,7 +33,7 @@ $url = $CFG->wwwroot . '/local/logdigest/index.php';
 
 
 $manageurl =   $CFG->wwwroot . '/local/logdigest/logconfig.php';
-    $ADMIN->add('localplugins', new admin_externalpage('managelogdigest', 'Manage Log Digest', $manageurl));
+    $ADMIN->add('localplugins', new admin_externalpage('managelogdigest', get_string('gerirlogdigest', 'local_logdigest'), $manageurl));
 
 
 /*$ADMIN->add('reports', new admin_externalpage('digestlog', get_string('log', 'admin'),

@@ -92,7 +92,7 @@ class controller{
          // Recebe as linhas que foram processadas e injecta as mesmas na db.
         foreach ($this->listaFicheiros as $ficheiro => $chaves) {
             mtrace("A iniciar processamento de ficheiros...");
-            $ultimalinha = $this->getultimalinha($chaves->tecnologia, $chaves->tipo);
+            $ultimalinha = $this->getultimalinha($chaves->tecnologia, $chaves->tipo, $chaves->id);
             if (isset($ultimalinha)) {
                 $ultimalinhalog = implode("|", $ultimalinha);
             } else {
@@ -114,12 +114,12 @@ class controller{
         }
     }
 
-    public function getultimalinha ($tecnologia, $tipo) {
-        // Vai buscar a ultima linha existente na DB de um determinado mix
+    public function getultimalinha ($tecnologia, $tipo, $id) {
+        // Vai buscar a ultima linha existente na DB de um determinado mix e id de ficheiro
         // Validacao do log de tecnologias. Devolve 0 se não existir e não prossegue.
         $logid = $this->modelo->getmixid($tecnologia, $tipo);
         if ($logid != 0) {
-            $resultado = $this->modelo->getultimalinha($tecnologia, $tipo, $this->instanciaid);
+            $resultado = $this->modelo->getultimalinha($tecnologia, $tipo, $this->instanciaid, $id);
             return $resultado;
         }
     }

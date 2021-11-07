@@ -35,6 +35,13 @@ class filtromysqlgeral_form extends moodleform {
         $mform->addElement('hidden', 'ficheiroid');
         $mform->setType('ficheiroid', PARAM_INT);
 
+        $tipos = [
+            ''=> "--",
+            'Note'=> "Note",
+            'Warning' => "Warning",
+            'Outros'=> "Outros"
+        ];
+
 
         $group1=array();
         $group1[] = $mform->createElement('html', '<p style="margin: 25px">De: </p>');
@@ -50,16 +57,22 @@ class filtromysqlgeral_form extends moodleform {
         $mform->setDefault('fdata', '');
         $mform->addGroup($group2, 'fim', '', ' ', false);
 
-
         $group3=array();
-        $group3[] = $mform->createElement('html', '<p style="margin: 25px">Tipo : </p>');
-        $group3[] = $mform->createElement('text', 'tipo'); 
+        $group3[] = $mform->createElement('html', '<p style="margin: 25px">Request: </p>');
+        $group3[] = $mform->createElement('select', 'tipo', '', $tipos); 
         $mform->setType('tipo', PARAM_TEXT);      
         $mform->setDefault('tipo', '');
         $mform->addGroup($group3, 'inputtipo', '', ' ', false);
 
-        $mform->addElement('checkbox', 'garbage', 'Linhas não tratadas.');
-        $mform->hideIf('inputtipo', 'garbage', 'checked');
+        $group4=array();
+        $group4[] = $mform->createElement('html', '<p style="margin: 25px">Pesquisa: </p>');
+        $group4[] = $mform->createElement('text', 'pesq'); 
+        $mform->setType('pesq', PARAM_TEXT);      
+        $mform->setDefault('pesq', '');
+        $mform->addGroup($group4, 'inputpl', '', ' ', false);
+
+        $mform->addElement('checkbox', 'ntratadas', 'Linhas não tratadas.');
+        $mform->hideIf('inputtipo', 'ntratadas', 'checked');
 
         $mform->addElement('submit', 'filterbutton', get_string('filter')); 
 

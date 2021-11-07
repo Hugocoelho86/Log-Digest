@@ -128,6 +128,7 @@ if ($logid == 1){
                 WHERE  instanciaid = :id
                 AND  ficheiroid = :fid
                 AND tempo BETWEEN :i AND :f
+                AND linha IS NULL
                 AND ".$DB->sql_like('mensagem', ':m').
                 "AND ".$DB->sql_like('nivellog', ':n').
                 "AND ".$DB->sql_like('ipcliente', ':o');
@@ -140,6 +141,7 @@ if ($logid == 1){
                 WHERE  instanciaid = :id
                 AND  ficheiroid = :fid
                 AND tempo BETWEEN :i AND :f
+                AND linha IS NULL
                 AND ".$DB->sql_like('mensagem', ':m').
                 "AND ".$DB->sql_like('nivellog', ':n').
                 "AND ".$DB->sql_like('ipcliente', ':o');
@@ -154,6 +156,7 @@ if ($logid == 1){
                         WHERE  instanciaid = :id
                         AND  ficheiroid = :fid
                         AND tempo BETWEEN :i AND :f
+                        AND linha IS NULL
                         AND ".$DB->sql_like('mensagem', ':m').
                         "AND ".$DB->sql_like('nivellog', ':n').
                         "AND ".$DB->sql_like('ipcliente', ':o');
@@ -166,6 +169,7 @@ if ($logid == 1){
                         WHERE  instanciaid = :id
                         AND  ficheiroid = :fid
                         AND tempo BETWEEN :i AND :f
+                        AND linha IS NULL
                         AND ".$DB->sql_like('mensagem', ':m').
                         "AND ".$DB->sql_like('ipcliente', ':o');
                         $pcount = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 'm' => '%'.$pesq.'%', 'o' => '%'.$ip.'%');
@@ -185,6 +189,7 @@ if ($logid == 1){
                         FROM {local_logdigest_apacheerro}
                         WHERE  instanciaid = :id
                         AND  ficheiroid = :fid
+                        AND linha IS NULL
                         AND ".$DB->sql_like('nivellog', ':pc');
                         $params = array('id' => $instancia, 'fid' => $ficheiroid, 'pc' => '%'.$value.'%');
                         $count = array_values($DB->get_records_sql($sql, $params));
@@ -249,18 +254,18 @@ if ($logid == 1){
             //verifica quais campos a pesquisar
             if($req){
 
-                $sql="SELECT * FROM {local_logdigest_apacheacesso} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND pedcliente LIKE :pc AND (pedcliente LIKE :p OR reqheader LIKE :m OR estadret LIKE :s) AND ipcliente LIKE :o";
+                $sql="SELECT * FROM {local_logdigest_apacheacesso} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NULL AND pedcliente LIKE :pc AND (pedcliente LIKE :p OR reqheader LIKE :m OR estadret LIKE :s) AND ipcliente LIKE :o";
                 $params = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 'pc' => '%'.$req.'%','p' => '%'.$pesq.'%',  'm' => '%'.$pesq.'%', 's' => '%'.$pesq.'%', 'o' => '%'.$ip.'%');
                 $logs = $DB->get_records_sql($sql, $params, 0, $maxlog);
 
             } else if ($idt){
-                $sql="SELECT * FROM {local_logdigest_apacheacesso} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND pedcliente LIKE :pc AND (pedcliente LIKE :p OR reqheader LIKE :m OR estadret LIKE :s) AND ipcliente LIKE :o";
+                $sql="SELECT * FROM {local_logdigest_apacheacesso} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NULL AND pedcliente LIKE :pc AND (pedcliente LIKE :p OR reqheader LIKE :m OR estadret LIKE :s) AND ipcliente LIKE :o";
                 $params = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 'pc' => '%'.$req.'%','p' => '%'.$pesq.'%',  'm' => '%'.$pesq.'%', 's' => '%'.$pesq.'%', 'o' => '%'.$ip.'%');
                 $logs = $DB->get_records_sql($sql, $params, 0, $maxlog);
 
                 // faz a contagem dos requests para apresentar no chart pie
                 foreach ($chartfields as $key => $value){
-                    $sql="SELECT COUNT(*) AS ncount FROM {local_logdigest_apacheacesso} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND pedcliente LIKE :pc AND (pedcliente LIKE :p OR reqheader LIKE :m OR estadret LIKE :s) AND ipcliente LIKE :o";
+                    $sql="SELECT COUNT(*) AS ncount FROM {local_logdigest_apacheacesso} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f  AND linha IS NULL AND pedcliente LIKE :pc AND (pedcliente LIKE :p OR reqheader LIKE :m OR estadret LIKE :s) AND ipcliente LIKE :o";
                     $params = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 'pc' => '%'.$value.'%','p' => '%'.$pesq.'%',  'm' => '%'.$pesq.'%', 's' => '%'.$pesq.'%', 'o' => '%'.$ip.'%');
                     $count = array_values($DB->get_records_sql($sql, $params));
                     $chartcount[$key] = $count[0]->ncount;
@@ -277,6 +282,7 @@ if ($logid == 1){
                     FROM {local_logdigest_apacheacesso}
                     WHERE  instanciaid = :id
                     AND ficheiroid = :fid 
+                    AND linha IS NULL
                     AND ".$DB->sql_like('pedcliente', ':pc');
                     $params = array('id' => $instancia, 'fid' => $ficheiroid, 'pc' => '%'.$value.'%');
                     $count = array_values($DB->get_records_sql($sql, $params));
@@ -338,18 +344,18 @@ if ($logid == 1){
         } else {
             //verifica quais campos a pesquisar
             if ($tipo){
-                $sql="SELECT * FROM {local_logdigest_mysqlerro} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND tipo LIKE :t AND (codigo LIKE :c OR subsistema LIKE :s OR mensagem LIKE :m)";
+                $sql="SELECT * FROM {local_logdigest_mysqlerro} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NULL AND tipo LIKE :t AND (codigo LIKE :c OR subsistema LIKE :s OR mensagem LIKE :m)";
                 $params = array('id' => $instancia, 'fid' => $ficheiroid,  'i' => $idt, 'f' => $fdt, 't' => '%'.$tipo.'%', 'c' => '%'.$pesq.'%', 's' => '%'.$pesq.'%', 'm' => '%'.$pesq.'%');
                 $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
 
             } else if ($idt){
-                $sql="SELECT * FROM {local_logdigest_mysqlerro} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND tipo LIKE :t AND (codigo LIKE :c OR subsistema LIKE :s OR mensagem LIKE :m)";
+                $sql="SELECT * FROM {local_logdigest_mysqlerro} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NULL AND tipo LIKE :t AND (codigo LIKE :c OR subsistema LIKE :s OR mensagem LIKE :m)";
                 $params = array('id' => $instancia, 'fid' => $ficheiroid,  'i' => $idt, 'f' => $fdt, 't' => '%'.$tipo.'%', 'c' => '%'.$pesq.'%', 's' => '%'.$pesq.'%', 'm' => '%'.$pesq.'%');
                 $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
 
 
-                // faz a contagem dos niveis erro para apresentar no chart pie
-                foreach ($chartfields as $key => $value){
+               // faz a contagem dos niveis erro para apresentar no chart pie
+               foreach ($chartfields as $key => $value){
                     if ($value !== "outros"){
                         $sqlcount="SELECT COUNT(*) AS ncount FROM {local_logdigest_mysqlerro} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND tipo LIKE :t AND (codigo LIKE :c OR subsistema LIKE :s OR mensagem LIKE :m)";
                         $pcount = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 't' => '%'.$value.'%', 'c' => '%'.$pesq.'%', 's' => '%'.$pesq.'%', 'm' => '%'.$pesq.'%');
@@ -360,7 +366,7 @@ if ($logid == 1){
                         $sqlcount="SELECT COUNT(*) AS ncount FROM {local_logdigest_mysqlerro} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND (codigo LIKE :c OR subsistema LIKE :s OR mensagem LIKE :m)";
                         $pcount = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 'c' => '%'.$pesq.'%', 's' => '%'.$pesq.'%', 'm' => '%'.$pesq.'%');
                         $count = array_values($DB->get_records_sql($sqlcount, $pcount));
-                        $count =$count[0]->ncount - array_sum($chartcount);                      
+                        $chartcount[$key] =$count[0]->ncount - array_sum($chartcount);                      
                     }
                 } 
 
@@ -388,7 +394,6 @@ if ($logid == 1){
                     }
                     
                 }
-
             }
             $templatetabela = 'local_logdigest/tabelamysqlerro';
         }
@@ -430,43 +435,72 @@ if ($logid == 1){
     
     } else {
         // Tipo para analise no Chart Pie
-        $chartfields = [];
+        $chartfields = ["Note", "Warning", "outros"];
         $chartcount = [];
 
-
-        //verifica quais campos a pesquisar
-        if ($tipo){
-            $sql="SELECT *
-            FROM {local_logdigest_mysqlgeral}
-            WHERE  instanciaid = :id
-            AND ficheiroid = :fid
-            AND tempo BETWEEN :i AND :f
-            AND ".$DB->sql_like('tipo', ':t');
-            $params = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 't' => '%'.$tipo.'%');
-            $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
-
-        } else if ($idt){
-            $sql="SELECT *
-            FROM {local_logdigest_mysqlgeral}
-            WHERE  instanciaid = :id
-            AND ficheiroid = :fid
-            AND tempo BETWEEN :i AND :f";
-            $params = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt);
-            $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
-
+        if ($ntratadas){
+            $sql="SELECT * FROM {local_logdigest_mysqlgeral} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NOT NULL AND linha LIKE :p";
+            $params = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 'p' => '%'.$pesq.'%');
+            $logs = $DB->get_records_sql($sql, $params, 0, $maxlog);
+            $templatetabela = 'local_logdigest/tabelalognaotratados';
+            
         } else {
-            // a entrar na pagina, pela primeira vez, vai buscar todos os dados do log
-            $nlogs = $DB->count_records('local_logdigest_mysqlgeral', null);
-            $logs = $DB->get_records('local_logdigest_mysqlgeral', ['instanciaid'=>$instancia], '', '*',  0, $maxlog);
 
+            //verifica quais campos a pesquisar
+            if ($tipo){
+                $sql="SELECT * FROM {local_logdigest_mysqlgeral} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NULL AND tipo LIKE :t AND mensagem LIKE :p";
+                $params = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 't'=>'%'.$tipo.'%', 'p' => '%'.$pesq.'%');
+                $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
+
+            } else if ($idt){
+                $sql="SELECT * FROM {local_logdigest_mysqlgeral} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NULL AND tipo LIKE :t AND mensagem LIKE :p";
+                $params = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 't'=>'%'.$tipo.'%', 'p' => '%'.$pesq.'%');
+                $logs = $DB->get_records_sql($sql, $params,  0, $maxlog);
+
+                 // faz a contagem dos niveis erro para apresentar no chart pie
+                 foreach ($chartfields as $key => $value){
+                    if ($value !== "outros"){
+                        $sqlcount="SELECT COUNT(*) AS ncount FROM {local_logdigest_mysqlgeral} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NULL AND tipo LIKE :t AND mensagem LIKE :p";
+                        $pcount = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 't' => '%'.$value.'%', 'p' => '%'.$pesq.'%');
+                        $count = array_values($DB->get_records_sql($sqlcount, $pcount));
+                        $chartcount[$key] = $count[0]->ncount;
+                        
+                    } else {
+                        $sqlcount="SELECT COUNT(*) AS ncount FROM  {local_logdigest_mysqlgeral} WHERE instanciaid = :id AND ficheiroid = :fid AND tempo BETWEEN :i AND :f AND linha IS NULL AND mensagem LIKE :p";
+                        $pcount = array('id' => $instancia, 'fid' => $ficheiroid, 'i' => $idt, 'f' => $fdt, 'p' => '%'.$pesq.'%');
+                        $count = array_values($DB->get_records_sql($sqlcount, $pcount));
+                        $chartcount[$key] =$count[0]->ncount - array_sum($chartcount);                      
+                    }
+                } 
+
+            } else {
+                // a entrar na pagina, pela primeira vez, vai buscar todos os dados do log
+               
+                // faz a contagem dos niveis erro para apresentar no chart pie
+               foreach ($chartfields as $key => $value){
+                    if ($value !== "outros"){
+                        $sqlcount="SELECT COUNT(*) AS ncount FROM {local_logdigest_mysqlgeral} WHERE instanciaid = :id AND ficheiroid = :fid AND linha IS NULL AND tipo LIKE :t";
+                        $pcount = array('id' => $instancia, 'fid' => $ficheiroid, 't' => '%'.$value.'%');
+                        $count = array_values($DB->get_records_sql($sqlcount, $pcount));
+                        $chartcount[$key] = $count[0]->ncount;
+                        
+                    } else {
+                        $sqlcount="SELECT COUNT(*) AS ncount FROM {local_logdigest_mysqlgeral} WHERE instanciaid = :id AND ficheiroid = :fid AND linha IS NULL";
+                        $pcount = array('id' => $instancia, 'fid' => $ficheiroid);
+                        $count = array_values($DB->get_records_sql($sqlcount, $pcount));
+                        $chartcount[$key] = $count[0]->ncount - array_sum($chartcount);                      
+                    }
+                } 
+
+            }
+            $templatetabela = 'local_logdigest/tabelamysqlgeral';
         }
-
         if (isset($logs)){
             
             $resultados->log = array_values($logs);
             
         }
-        $templatetabela = 'local_logdigest/tabelamysqlgeral';
+        
 
     }
     
@@ -553,11 +587,12 @@ if (array_sum($chartcount) > 0){
 if(!empty($resultados->log)){
     //formulario para exportar ficheiro
     $downloadform->display();
+    
 }
 
 
 
-if (isset($resultados)){
+if (!is_null($resultados)){
     // apresenta a tabela consuante tecnologia/tipo e pesquisa efetuada
     echo $OUTPUT->render_from_template($templatetabela, $resultados);  
 }
