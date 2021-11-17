@@ -28,9 +28,9 @@ class historicolog_form extends moodleform {
 
         $historico = $this->_customdata['historico'];
 
-        $mform->addElement('html', '<br><h2>Histórico Logs</h2><br>');
+        $mform->addElement('html', '<br><h2>'.get_string('historicologs', 'local_logdigest').'</h2><br>');
 
-        $mform->addElement('select', 'retencao', 'Período de dias para guardar os logs:', $historico); 
+        $mform->addElement('select', 'retencao', get_string('textohistoricologs', 'local_logdigest'), $historico); 
         $mform->setType('retencao', PARAM_INT);      
         $mform->setDefault('retencao', '');
 

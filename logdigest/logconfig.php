@@ -107,7 +107,17 @@ $resultados->caminhos = array_values($caminho);
 $resultados->urlinstancia = new moodle_url('/local/logdigest/instancia.php?id');
 $resultados->urldelinstancia = new moodle_url('/local/logdigest/delete.php?instanciaid');
 $resultados->urlcaminho = new moodle_url('/local/logdigest/caminho.php?id');
-$resultados->urldelcaminho = new moodle_url('/local/logdigest/delete.php?caminhoid');
+$resultados->urldelcaminho = new moodle_url('/local/logdigest/delete.php?caminhoid');~
+$resultados->nome = get_string('nome', 'local_logdigest');
+$resultados->tecnologia = get_string('tecnologia', 'local_logdigest');
+$resultados->tipo = get_string('tipo', 'local_logdigest');
+$resultados->caminho = get_string('caminho', 'local_logdigest');
+$resultados->analisar = get_string('analisar', 'local_logdigest');
+$resultados->descricao = get_string('descricao', 'local_logdigest');
+$resultados->adicionar = get_string('adicionar', 'local_logdigest');
+$resultados->instancia = get_string('instancia', 'local_logdigest');
+$resultados->caminhologs = get_string('caminhologs', 'local_logdigest');
+
 
 
 $mform_hlog->set_data($valores);
@@ -116,7 +126,7 @@ echo $OUTPUT->header();
 
 // botão para voltar à página inicial
 echo html_writer::start_tag('div');
-echo html_writer::tag('a', 'Voltar', array('class' => 'btn btn-secondary float-right mx-2', 'href'=> $indexurl , 'role' =>'button'));
+echo html_writer::tag('a', get_string('voltar', 'local_logdigest'), array('class' => 'btn btn-secondary float-right mx-2', 'href'=> $indexurl , 'role' =>'button'));
 echo html_writer::end_tag('div');
 echo html_writer::empty_tag('br');
 echo html_writer::empty_tag('br');

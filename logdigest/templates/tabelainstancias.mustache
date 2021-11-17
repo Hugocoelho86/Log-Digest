@@ -1,10 +1,10 @@
 <div class="card">
 <div class="card-body">
-  <h3 class="float-left">Instancias</h3> 
+  <h3 class="float-left">{{instancia}}</h3> 
     <form method='post' action='instancia.php'>
               <input type="hidden" name="novo" value="1">
               <button type="submit" class="btn btn-secondary float-right">
-                Adicionar
+                {{adicionar}}
               </button>
           </form>
     <br></div></div>
@@ -14,8 +14,8 @@
       <tr>
         <th>ID</th>
         <th>IP</th>
-        <th>Nome</th>
-        <th>Descrição</th>
+        <th>{{nome}}</th>
+        <th>{{descricao}}</th>
       </tr>
     </thead>
     {{#inst}}

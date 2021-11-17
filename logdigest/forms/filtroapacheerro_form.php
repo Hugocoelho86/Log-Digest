@@ -37,14 +37,14 @@ class filtroapacheerro_form extends moodleform {
 
 
         $group1=array();
-        $group1[] = $mform->createElement('html', '<p style="margin: 25px">De: </p>');
+        $group1[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('de', 'local_logdigest').': </p>');
         $group1[] = $mform->createElement('date_time_selector', 'idata', '');
         $mform->setType('idata', PARAM_INT);
         $mform->setDefault('idata', strtotime("-1 week"));
         $mform->addGroup($group1, 'inicio', '', ' ', false);
 
         $group2=array();
-        $group2[] = $mform->createElement('html', '<p style="margin: 25px">a: </p>');
+        $group2[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('a', 'local_logdigest').': </p>');
         $group2[] = $mform->createElement('date_time_selector', 'fdata', '');
         $mform->setType('fdata', PARAM_INT);
         $mform->setDefault('fdata', '');
@@ -52,7 +52,7 @@ class filtroapacheerro_form extends moodleform {
 
 
         $group3=array();
-        $group3[] = $mform->createElement('html', '<p style="margin: 25px">IP origem: </p>');
+        $group3[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('iporigem', 'local_logdigest').': </p>');
         $group3[] = $mform->createElement('text', 'ip'); 
         $mform->setType('ip', PARAM_TEXT);      
         $mform->setDefault('ip', '');
@@ -60,20 +60,20 @@ class filtroapacheerro_form extends moodleform {
 
 
         $group4=array();
-        $group4[] = $mform->createElement('html', '<p style="margin: 25px">Nível erro: </p>');
+        $group4[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('nivelerro', 'local_logdigest').': </p>');
         $group4[] = $mform->createElement('text', 'nl'); 
         $mform->setType('nl', PARAM_TEXT);      
         $mform->setDefault('nl', '');
         $mform->addGroup($group4, 'inputnivellog', '', ' ', false);
 
         $group5=array();
-        $group5[] = $mform->createElement('html', '<p style="margin: 25px">Pesquisa: </p>');
+        $group5[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('pesquisa', 'local_logdigest').': </p>');
         $group5[] = $mform->createElement('text', 'pesq'); 
         $mform->setType('pesq', PARAM_TEXT);      
         $mform->setDefault('pesq', '');
         $mform->addGroup($group5, 'inputpl', '', ' ', false);
 
-        $mform->addElement('checkbox', 'ntratadas', 'Linhas não tratadas.');
+        $mform->addElement('checkbox', 'ntratadas',  get_string('linhasnaotratadas', 'local_logdigest'));
         $mform->hideIf('inputip', 'ntratadas', 'checked');
         $mform->hideIf('inputnivellog', 'ntratadas', 'checked');
         

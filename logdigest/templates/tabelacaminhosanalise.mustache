@@ -5,10 +5,10 @@
     <thead>
       <tr>
         <th>IP</th>
-        <th>Nome</th>
-        <th>Tecnologia</th>
-        <th>Tipo</th>
-        <th>Caminho</th>
+        <th>{{nome}}</th>
+        <th>{{tecnologia}}</th>
+        <th>{{tipo}}</th>
+        <th>{{caminho}}</th>
       </tr>
     </thead>
     {{#caminhos}}
@@ -18,7 +18,7 @@
         <td>{{{tecnologia}}}</td>
         <td>{{{tipo}}}</td>
         <td>{{{caminho}}}</td>
-        <td><a href="{{urlcaminho}}?instancia={{instanciaid}}&logid={{logsid}}&ficheiroid={{id}}" class="btn btn-secondary float-right">Analisar</td>
+        <td><a href="{{urlcaminho}}?instancia={{instanciaid}}&logid={{logsid}}&ficheiroid={{id}}" class="btn btn-secondary float-right">{{analisar}}</td>
       </tr>
     {{/caminhos}}
   </table>

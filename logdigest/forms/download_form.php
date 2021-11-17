@@ -66,13 +66,13 @@ class download_form extends moodleform {
         $mform->setType('ntratadas', PARAM_BOOL);
 
        $formatos = array(
-            'csv'=>'Valores separados por vírgulas (.csv)',
+            'csv'=>'Comma-separated values (.csv)',
             'excel'=>'Microsoft Excel (.xlsx)',
             //'pdf'=>'Portable Document Format (.pdf)'
         );
 
         $group=array();
-        $group[] = $mform->createElement('html', '<p style="margin: 25px">Exportar logs para: </p>');
+        $group[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('exportarlogs', 'local_logdigest').': </p>');
         $group[] = $mform->createElement('select', 'formato', 'Formato', $formatos);
         $group[] = $mform->createElement('submit', 'descarregar', get_string('download'));
         $mform->addGroup($group, 'exportar', '', ' ', false);

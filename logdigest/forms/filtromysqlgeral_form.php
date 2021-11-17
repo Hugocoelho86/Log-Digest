@@ -44,14 +44,14 @@ class filtromysqlgeral_form extends moodleform {
 
 
         $group1=array();
-        $group1[] = $mform->createElement('html', '<p style="margin: 25px">De: </p>');
+        $group1[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('de', 'local_logdigest').': </p>');
         $group1[] = $mform->createElement('date_time_selector', 'idata', '');
         $mform->setType('idata', PARAM_INT);
-        $mform->setDefault('idata',  strtotime("-1 week"));
+        $mform->setDefault('idata', strtotime("-1 week"));
         $mform->addGroup($group1, 'inicio', '', ' ', false);
 
         $group2=array();
-        $group2[] = $mform->createElement('html', '<p style="margin: 25px">a: </p>');
+        $group2[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('a', 'local_logdigest').': </p>');
         $group2[] = $mform->createElement('date_time_selector', 'fdata', '');
         $mform->setType('fdata', PARAM_INT);
         $mform->setDefault('fdata', '');
@@ -65,13 +65,13 @@ class filtromysqlgeral_form extends moodleform {
         $mform->addGroup($group3, 'inputtipo', '', ' ', false);
 
         $group4=array();
-        $group4[] = $mform->createElement('html', '<p style="margin: 25px">Pesquisa: </p>');
+        $group4[] = $mform->createElement('html', '<p style="margin: 25px">'.get_string('pesquisa', 'local_logdigest').': </p>');
         $group4[] = $mform->createElement('text', 'pesq'); 
         $mform->setType('pesq', PARAM_TEXT);      
         $mform->setDefault('pesq', '');
         $mform->addGroup($group4, 'inputpl', '', ' ', false);
 
-        $mform->addElement('checkbox', 'ntratadas', 'Linhas não tratadas.');
+        $mform->addElement('checkbox', 'ntratadas', get_string('linhasnaotratadas', 'local_logdigest'));
         $mform->hideIf('inputtipo', 'ntratadas', 'checked');
 
         $mform->addElement('submit', 'filterbutton', get_string('filter')); 

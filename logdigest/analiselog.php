@@ -554,17 +554,26 @@ if (!empty($resultados->log)){
     $filtro->set_data($valores);
 }
 
+$resultados->data = get_string('data', 'local_logdigest');
+$resultados->tipo = get_string('tipo', 'local_logdigest');
+$resultados->mensagem = get_string('mensagem', 'local_logdigest');
+$resultados->codigo = get_string('codigo', 'local_logdigest');
+$resultados->nivelerro = get_string('nivelerro', 'local_logdigest');
+$resultados->idprocesso = get_string('idprocesso', 'local_logdigest');
+$resultados->subsistema = get_string('subsistema', 'local_logdigest');
+$resultados->linhalog = get_string('linhalog', 'local_logdigest');
+
 echo $OUTPUT->header();
 
 // botões de atalho
 
 echo html_writer::empty_tag('br');
-echo html_writer::tag('h3', 'Instância: ' . '<b>' . $objinstancia->nome . '</b>', array('class' => 'float-left'));
+echo html_writer::tag('h3', get_string('instancia', 'local_logdigest').': ' . '<b>' . $objinstancia->nome . '</b>', array('class' => 'float-left'));
 echo html_writer::start_tag('div');
 echo html_writer::start_tag('a', array('class' => 'btn btn-secondary float-right ml-2', 'href'=> $configurl , 'role' =>'button'));
 echo html_writer::tag('i', '', array('class' => 'fa fa-cog'));
 echo html_writer::end_tag('a');
-echo html_writer::tag('a', 'Voltar', array('class' => 'btn btn-secondary float-right mx-2', 'href'=> $indexurl , 'role' =>'button'));
+echo html_writer::tag('a', get_string('voltar', 'local_logdigest'), array('class' => 'btn btn-secondary float-right mx-2', 'href'=> $indexurl , 'role' =>'button'));
 echo html_writer::end_tag('div');
 echo html_writer::empty_tag('br');
 
@@ -588,11 +597,11 @@ if(!empty($resultados->log)){
     //formulario para exportar ficheiro
     $downloadform->display();
     
+    
 }
 
 
-
-if (!is_null($resultados)){
+if (!is_null($resultados) && !empty($idt)){
     // apresenta a tabela consuante tecnologia/tipo e pesquisa efetuada
     echo $OUTPUT->render_from_template($templatetabela, $resultados);  
 }

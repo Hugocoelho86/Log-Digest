@@ -28,9 +28,9 @@ class deletelogs_form extends moodleform {
 
         $mform = $this->_form; // Don't forget the underscore! 
 
-        $mform->addElement('html', '<br><h2>Apagar logs</h2><br>');
+        $mform->addElement('html', '<br><h2>'.get_string('apagarlogs', 'local_logdigest').'</h2><br>');
 
-        $mform->addElement('date_time_selector', 'data', 'Anteriores a data e hora selecionadas');
+        $mform->addElement('date_time_selector', 'data', get_string('textoapagarlogs', 'local_logdigest'));
         $mform->setType('data', PARAM_INT);
         $mform->setDefault('data', '');
 

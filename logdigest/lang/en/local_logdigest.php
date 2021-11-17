@@ -19,20 +19,56 @@
  *
  * @package     local_logdigest
  * @category    string
- * @copyright   2021 Tiago Nunes
+ * @copyright   2021 Tiago Nunes & Hugo Coelho
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'logdigest';
-$string['recolheficheiros'] = 'Tratamento de ficheiros';
-$string['manuntencaodb'] = 'Manutenção da base de dados';
-$string['logdigest'] = 'Log digest';
-$string['logconfig'] = 'Log digest - Confirguração';
-$string['instancia'] = 'Gerir Instancias';
-$string['caminho'] = 'Gerir Caminhos';
-$string['analiselog'] = 'Análise Logs:';
-$string['ajuda'] = 'como preencher caminho do log'; 
+$string['recolheficheiros'] = 'File handling';
+$string['manuntencaodb'] = 'Database maintenance';
+$string['logdigest'] = 'Log Digest';
+$string['logconfig'] = 'Log Digest - Settings';
+$string['geririnstancia'] = 'Manage Instances';
+$string['gerircaminho'] = 'Manage Log Paths';
+$string['analiselog'] = 'Logs Analysis:';
+$string['ajuda'] = 'how to fill log path'; 
 $string['ajuda_help'] = 'Ex.: "/var/log/apache2/access.log';
-$string['gerirlogdigest'] = 'Gerir Log Digest';
+$string['gerirlogdigest'] = 'Manage Log Digest';
+$string['logsparaanalise'] = 'Logs for analysis';
+$string['nome'] = 'Name';
+$string['tecnologia'] = 'Technology';
+$string['tipo'] = 'Type';
+$string['caminho'] = 'Path';
+$string['analisar'] = 'Analyze';
+$string['configuracoes'] = 'Configurations';
+$string['descricao'] = 'Description';
+$string['historicologs'] = 'History Logs';
+$string['textohistoricologs'] = 'Period of days to save logs';
+$string['apagarlogs'] = 'Delete logs';
+$string['textoapagarlogs'] = 'Before the selected date and time';
+$string['adicionar'] = 'Add';
+$string['instancia'] = 'Instance';
+$string['caminhologs'] = 'Path Logs';
+$string['voltar'] = 'Back';
+$string['de'] = 'From';
+$string['a'] = 'to';
+$string['iporigem'] = 'Source IP';
+$string['pesquisa'] = 'Search';
+$string['linhasnaotratadas'] = 'Untreated lines';
+$string['nivelerro'] = 'Error level';
+$string['exportarlogs'] = 'Export logs for';
+$string['ficheirocsv'] = 'Comma-separated values';
+$string['data'] = 'Date';
+$string['mensagem'] = 'Message';
+$string['codigo'] = 'Code';
+$string['idprocesso'] = 'Thread ID';
+$string['subsistema'] = 'Subsystem';
+$string['linhalog'] = 'Log Record';
+
+
+
+
+
+

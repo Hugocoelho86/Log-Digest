@@ -73,16 +73,22 @@ $caminho = $DB->get_records_sql($sql, null);
 $resultados = new stdClass();
 $resultados->caminhos = array_values($caminho);
 $resultados->urlcaminho = new moodle_url('/local/logdigest/analiselog.php');
+$resultados->nome = get_string('nome', 'local_logdigest');
+$resultados->tecnologia = get_string('tecnologia', 'local_logdigest');
+$resultados->tipo = get_string('tipo', 'local_logdigest');
+$resultados->caminho = get_string('caminho', 'local_logdigest');
+$resultados->analisar = get_string('analisar', 'local_logdigest');
+
 
 echo $OUTPUT->header();
 
 // Titulo
-echo html_writer::tag('h2', 'Logs para Analise');
+echo html_writer::tag('h2', get_string('logsparaanalise', 'local_logdigest'));
 
 // Botões de atalho
 echo html_writer::start_tag('div');
 echo html_writer::start_tag('a', array('class' => 'btn btn-secondary float-right mr-4', 'href'=> $configurl , 'role' =>'button'));
-echo html_writer::tag('h6', 'Configurações ', array('class' => 'float-right mt-1 ml-2'));
+echo html_writer::tag('h6', get_string('configuracoes', 'local_logdigest') , array('class' => 'float-right mt-1 ml-2'));
 echo html_writer::tag('i', '', array('class' => 'fa fa-cog'));
 echo html_writer::end_tag('a');
 echo html_writer::end_tag('div');

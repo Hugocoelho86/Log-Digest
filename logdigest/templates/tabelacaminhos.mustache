@@ -1,10 +1,10 @@
 <div class="card">
 <div class="card-body"> 
-  <h3 class="float-left">Caminho Logs</h3>
+  <h3 class="float-left">{{caminhologs}}</h3>
     <form method='post' action='caminho.php'>
                 <input type="hidden" name="novo" value="1">
                 <button type="submit" class="btn btn-secondary float-right">
-                  Adicionar
+                  {{adicionar}}
                 </button>
     </form>
     <br></div></div>
@@ -13,10 +13,10 @@
     <thead>
       <tr>
         <th>IP</th>
-        <th>Nome</th>
-        <th>Tecnologia</th>
-        <th>Tipo</th>
-        <th>Caminho</th>
+        <th>{{nome}}</th>
+        <th>{{tecnologia}}</th>
+        <th>{{tipo}}</th>
+        <th>{{caminho}}</th>
       </tr>
     </thead>
     {{#caminhos}}
