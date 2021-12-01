@@ -26,6 +26,7 @@ class modelo{
         }
         return 365;
     }
+
     public function getficheirosinstancia($id) {
         // Com base no ID da instancia vai buscar os caminhos e respetiva informacao atraves de um inner join.
         global $DB;
@@ -126,5 +127,16 @@ class modelo{
         $query = "id IN (SELECT id FROM $CFG->prefix$tabela WHERE instanciaid = $instanciaid  " .
         "AND tempo BETWEEN $datalimite AND $datainicio)";
         return $DB->delete_records_select($tabela, $query);
+    }
+
+    public function changecaminholog($id, $caminho){
+        global $DB;
+        
+        $ficheiro = array(
+            'id'             => $id,
+            'caminho'        => $caminho,
+        );
+       
+        return $DB->update_record('local_logdigest_caminholog', $ficheiro, $bulk=false);
     }
 }

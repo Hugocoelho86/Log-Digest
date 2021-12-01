@@ -157,7 +157,7 @@ class controller{
             $localip = file_get_contents($ficheiro);
             if (empty($localip)) {
                 try {
-                    $localip = gethostname(php_uname('n'));
+                    $localip = getHostByName(getHostName());
                     file_put_contents($ficheiro, $localip);
                 } catch (\Exception $e) {
                     echo 'Existiu uma excepcao ao editar o IP.', $e->getMessage(), "\n";
@@ -169,5 +169,9 @@ class controller{
             exit(1);
         }
         return $localip;
+    }
+
+    public function changecaminholog($id, $caminho){
+        $resultado = $this->modelo->changecaminholog($id, $caminho);
     }
 }
